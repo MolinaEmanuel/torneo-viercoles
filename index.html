@@ -36,18 +36,40 @@
   <table id="partidos"></table>
 </div>
 
-<script>
+<!-- FIREBASE + APP -->
+<script type="module">
+
+// 🔥 IMPORTS FIREBASE
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// 🔥 CONFIG (PEGÁ LA TUYA)
+const firebaseConfig = {
+  apiKey: "AIzaSyAY-F10jVa_KTRtIjm4GNupFQ_UR1TsJVw",
+  authDomain: "torneo-viercoles.firebaseapp.com",
+  projectId: "torneo-viercoles",
+  storageBucket: "torneo-viercoles.firebasestorage.app",
+  messagingSenderId: "233402812946",
+  appId: "1:233402812946:web:f1b9acd1f95f243200e6cb"
+};
+
+// 🔥 INIT
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// DATOS
 const equipoA = "Equipo SEBA";
 const equipoB = "Equipo HEBER";
 
 let admin = localStorage.getItem("admin") === "true";
+let datos = [];
 
-// MODAL LOGIN
-function abrirLogin() {
+// LOGIN
+window.abrirLogin = function() {
   document.getElementById("modalLogin").style.display = "flex";
 }
 
-function verificarLogin() {
+window.verificarLogin = function() {
   let pass = document.getElementById("passwordInput").value;
 
   if (pass === "cogi2") {
@@ -64,7 +86,7 @@ function cerrarLogin() {
   document.getElementById("modalLogin").style.display = "none";
 }
 
-function logout() {
+window.logout = function() {
   admin = false;
   localStorage.removeItem("admin");
   renderPartidos();
@@ -88,21 +110,34 @@ function generarFechas() {
   return fechas;
 }
 
-// DATOS
-let datos = JSON.parse(localStorage.getItem("torneo")) || [];
+// 🔥 CARGAR DATOS EN TIEMPO REAL
+function cargarDatos() {
+  const ref = doc(db, "torneo", "datos");
 
-if (datos.length === 0) {
-  datos = generarFechas().map(f => ({
-    fecha: f.toLocaleDateString('es-AR', {
-      day: '2-digit',
-      month: '2-digit'
-    }),
-    resultado: null
-  }));
+  onSnapshot(ref, (docSnap) => {
+    if (docSnap.exists()) {
+      datos = docSnap.data().partidos;
+    } else {
+      datos = generarFechas().map(f => ({
+        fecha: f.toLocaleDateString('es-AR', {
+          day: '2-digit',
+          month: '2-digit'
+        }),
+        resultado: null
+      }));
+
+      guardar();
+    }
+
+    renderPartidos();
+    renderTabla();
+  });
 }
 
+// 🔥 GUARDAR
 function guardar() {
-  localStorage.setItem("torneo", JSON.stringify(datos));
+  const ref = doc(db, "torneo", "datos");
+  setDoc(ref, { partidos: datos });
 }
 
 // PARTIDOS
@@ -133,7 +168,7 @@ function renderPartidos() {
       </td>
       <td>
         ${admin ? `
-          <input type="number" placeholder="+goles" id="goles${i}" style="width:60px;">
+          <input type="number" placeholder="+goles" id="goles${i}">
           <select id="ganador${i}">
             <option value="">-</option>
             <option value="A">${equipoA}</option>
@@ -150,7 +185,7 @@ function renderPartidos() {
 }
 
 // GUARDAR RESULTADO
-function guardarResultado(i) {
+window.guardarResultado = function(i) {
   let goles = document.getElementById("goles" + i).value;
   let ganador = document.getElementById("ganador" + i).value;
 
@@ -166,26 +201,6 @@ function guardarResultado(i) {
   }
 
   guardar();
-  renderPartidos();
-  renderTabla();
-}
-
-// ANIMAR NÚMEROS
-function animarValor(elemento, inicio, fin, duracion) {
-  let start = null;
-
-  function step(timestamp) {
-    if (!start) start = timestamp;
-    let progreso = timestamp - start;
-    let valor = Math.min(inicio + (fin - inicio) * (progreso / duracion), fin);
-    elemento.innerText = Math.floor(valor);
-
-    if (progreso < duracion) {
-      requestAnimationFrame(step);
-    }
-  }
-
-  requestAnimationFrame(step);
 }
 
 // TABLA
@@ -220,21 +235,15 @@ function renderTabla() {
     ${tabla.map((e, i) => `
       <div class="fila ${i === 0 ? 'lider' : ''}">
         ${i === 0 ? '🥇' : ''} <b>${e.nombre}</b> -
-        <span id="pts${i}">0</span> pts
+        ${e.puntos} pts
       </div>
     `).join("")}
   `;
-
-  // Animar puntos
-  tabla.forEach((e, i) => {
-    let el = document.getElementById("pts" + i);
-    animarValor(el, 0, e.puntos, 500);
-  });
 }
 
 // INIT
-renderPartidos();
-renderTabla();
+cargarDatos();
+
 </script>
 
 </body>
