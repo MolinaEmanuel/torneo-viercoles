@@ -26,6 +26,17 @@
   </div>
 </div>
 
+<!-- JUGADOR DE LA FECHA -->
+<div class="card">
+  <h2>🏅 Jugador de la Fecha</h2>
+  <div id="infoFecha"></div>
+
+  <div id="adminJugador" style="display:none;">
+    <input type="text" id="inputJugador" placeholder="Nombre del jugador">
+    <button onclick="guardarJugador()">Guardar</button>
+  </div>
+</div>
+
 <div class="card">
   <h2>Tabla de posiciones</h2>
   <p id="tabla"></p>
@@ -36,14 +47,11 @@
   <table id="partidos"></table>
 </div>
 
-<!-- FIREBASE + APP -->
 <script type="module">
 
-// 🔥 IMPORTS FIREBASE
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// 🔥 CONFIG (PEGÁ LA TUYA)
 const firebaseConfig = {
   apiKey: "AIzaSyAY-F10jVa_KTRtIjm4GNupFQ_UR1TsJVw",
   authDomain: "torneo-viercoles.firebaseapp.com",
@@ -53,44 +61,39 @@ const firebaseConfig = {
   appId: "1:233402812946:web:f1b9acd1f95f243200e6cb"
 };
 
-// 🔥 INIT
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// DATOS
 const equipoA = "Equipo SEBA";
 const equipoB = "Equipo HEBER";
 
 let admin = localStorage.getItem("admin") === "true";
 let datos = [];
+let jugadorFecha = "";
 
 // LOGIN
-window.abrirLogin = function() {
+window.abrirLogin = () => {
   document.getElementById("modalLogin").style.display = "flex";
-}
+};
 
-window.verificarLogin = function() {
+window.verificarLogin = () => {
   let pass = document.getElementById("passwordInput").value;
 
   if (pass === "cogi2") {
     admin = true;
     localStorage.setItem("admin", "true");
-    cerrarLogin();
-    renderPartidos();
+    document.getElementById("modalLogin").style.display = "none";
+    renderAll();
   } else {
     alert("Contraseña incorrecta");
   }
-}
+};
 
-function cerrarLogin() {
-  document.getElementById("modalLogin").style.display = "none";
-}
-
-window.logout = function() {
+window.logout = () => {
   admin = false;
   localStorage.removeItem("admin");
-  renderPartidos();
-}
+  renderAll();
+};
 
 // FECHAS
 function generarFechas() {
@@ -110,13 +113,14 @@ function generarFechas() {
   return fechas;
 }
 
-// 🔥 CARGAR DATOS EN TIEMPO REAL
+// FIREBASE
 function cargarDatos() {
   const ref = doc(db, "torneo", "datos");
 
   onSnapshot(ref, (docSnap) => {
     if (docSnap.exists()) {
       datos = docSnap.data().partidos;
+      jugadorFecha = docSnap.data().jugador || "";
     } else {
       datos = generarFechas().map(f => ({
         fecha: f.toLocaleDateString('es-AR', {
@@ -125,46 +129,55 @@ function cargarDatos() {
         }),
         resultado: null
       }));
-
       guardar();
     }
 
-    renderPartidos();
-    renderTabla();
+    renderAll();
   });
 }
 
-// 🔥 GUARDAR
 function guardar() {
   const ref = doc(db, "torneo", "datos");
-  setDoc(ref, { partidos: datos });
+  setDoc(ref, {
+    partidos: datos,
+    jugador: jugadorFecha
+  });
 }
 
-// PARTIDOS
+// RENDER GENERAL
+function renderAll() {
+  renderPartidos();
+  renderTabla();
+  renderJugador();
+}
+
+// TABLA PARTIDOS
 function renderPartidos() {
   const tabla = document.getElementById("partidos");
 
   tabla.innerHTML = `
     <tr>
       <th>Fecha</th>
+      <th>Día / Mes</th>
       <th>Resultado</th>
       <th>Cargar</th>
     </tr>
   `;
 
-  datos.forEach((partido, i) => {
+  datos.forEach((p, i) => {
     let fila = document.createElement("tr");
 
     fila.innerHTML = `
-      <td>${partido.fecha}</td>
+      <td>Fecha ${i + 1}</td>
+      <td>${p.fecha}</td>
       <td class="${
-        partido.resultado === "Empate"
+        p.resultado === "Empate"
           ? "empate"
-          : partido.resultado?.includes(equipoA) || partido.resultado?.includes(equipoB)
+          : p.resultado?.includes(equipoA) || p.resultado?.includes(equipoB)
           ? "ganado"
           : ""
       }">
-        ${partido.resultado ?? "-"}
+        ${p.resultado ?? "-"}
       </td>
       <td>
         ${admin ? `
@@ -185,14 +198,11 @@ function renderPartidos() {
 }
 
 // GUARDAR RESULTADO
-window.guardarResultado = function(i) {
+window.guardarResultado = (i) => {
   let goles = document.getElementById("goles" + i).value;
   let ganador = document.getElementById("ganador" + i).value;
 
   if (!ganador) return alert("Elegí un resultado");
-  if (ganador !== "E" && (!goles || goles <= 0)) {
-    return alert("Ingresá la diferencia de goles");
-  }
 
   if (ganador === "E") {
     datos[i].resultado = "Empate";
@@ -201,9 +211,9 @@ window.guardarResultado = function(i) {
   }
 
   guardar();
-}
+};
 
-// TABLA
+// TABLA POSICIONES
 function renderTabla() {
   let puntosA = 0;
   let puntosB = 0;
@@ -240,6 +250,23 @@ function renderTabla() {
     `).join("")}
   `;
 }
+
+// JUGADOR
+function renderJugador() {
+  let jugados = datos.filter(p => p.resultado).length;
+
+  document.getElementById("infoFecha").innerHTML = `
+    <div>Fecha actual: ${jugados}</div>
+    <div>Jugador de la fecha: <b>${jugadorFecha || "-"}</b></div>
+  `;
+
+  document.getElementById("adminJugador").style.display = admin ? "block" : "none";
+}
+
+window.guardarJugador = () => {
+  jugadorFecha = document.getElementById("inputJugador").value;
+  guardar();
+};
 
 // INIT
 cargarDatos();
