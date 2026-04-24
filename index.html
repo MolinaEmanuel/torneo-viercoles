@@ -15,7 +15,7 @@
 <h2>Julio "Messi" Gimenez</h2>
 
 <!-- NAV -->
-<div style="display:flex; gap:10px; justify-content:center; margin-bottom:20px;">
+<div class="nav">
   <button onclick="mostrarSeccion('inicio')">Inicio</button>
   <button onclick="mostrarSeccion('historial')">Historial</button>
   <button onclick="mostrarSeccion('ranking')">Ranking MVP</button>
@@ -36,13 +36,13 @@
 <!-- INICIO -->
 <div id="inicio">
 
-<div class="card" style="display:flex; gap:20px; flex-wrap:wrap;">
-  <div class="card">
+<div class="cards-top">
+  <div class="card highlight">
     <h3>📅 Fecha actual</h3>
     <div id="fechaActual"></div>
   </div>
 
-  <div class="card">
+  <div class="card highlight">
     <h3>🏅 Jugador de la fecha</h3>
     <div id="jugadorTexto"></div>
 
@@ -120,7 +120,7 @@ window.verificarLogin = () => {
     localStorage.setItem("admin","true");
     modalLogin.style.display="none";
     renderAll();
-  } else alert("Error");
+  } else alert("Contraseña incorrecta");
 };
 window.logout = () => {
   admin=false;
@@ -167,22 +167,28 @@ function guardar(){
   });
 }
 
-// RESULTADOS
+// RESULTADO
 window.guardarResultado=(i)=>{
   let a=parseInt(document.getElementById("a"+i).value);
   let b=parseInt(document.getElementById("b"+i).value);
-  if(isNaN(a)||isNaN(b)) return alert("Error");
+
+  if(isNaN(a)||isNaN(b)) return alert("Ingresá ambos goles");
 
   datos[i].golesA=a;
   datos[i].golesB=b;
+
   guardar();
 };
 
-// JUGADOR
+// MVP
 window.guardarJugador=()=>{
-  let idx=datos.filter(p=>p.golesA!=null).length-1;
-  if(idx<0) return;
-  jugadores[idx]=inputJugador.value;
+  let jugados=datos.filter(p=>p.golesA!=null).length;
+  if(jugados===0) return;
+
+  let nombre=inputJugador.value;
+  if(!nombre) return;
+
+  jugadores[jugados-1]=nombre;
   guardar();
 };
 
@@ -202,8 +208,17 @@ function renderPartidos(){
 
   datos.forEach((p,i)=>{
     let res="-";
+
     if(p.golesA!=null){
-      res=`${p.golesA}-${p.golesB}`;
+      let dif=Math.abs(p.golesA-p.golesB);
+
+      if(p.golesA>p.golesB){
+        res=`${equipoA} ganó ${p.golesA}-${p.golesB} (+${dif})`;
+      } else if(p.golesB>p.golesA){
+        res=`${equipoB} ganó ${p.golesB}-${p.golesA} (+${dif})`;
+      } else {
+        res=`Empate ${p.golesA}-${p.golesB}`;
+      }
     }
 
     html+=`<tr>
@@ -211,8 +226,9 @@ function renderPartidos(){
     <td>${p.fecha}</td>
     <td>${res}</td>
     <td>${admin?`
-      <input id="a${i}" type="number">
-      <input id="b${i}" type="number">
+      ${equipoA} <input id="a${i}" type="number">
+      vs
+      ${equipoB} <input id="b${i}" type="number">
       <button onclick="guardarResultado(${i})">OK</button>
     `:'-'}</td>
     </tr>`;
@@ -223,25 +239,35 @@ function renderPartidos(){
 
 // TABLA
 function renderTabla(){
-  let a=0,b=0;
+  let a=0,b=0,difA=0,difB=0;
 
   datos.forEach(p=>{
     if(p.golesA==null) return;
+
+    difA+=p.golesA-p.golesB;
+    difB+=p.golesB-p.golesA;
+
     if(p.golesA>p.golesB) a+=3;
     else if(p.golesB>p.golesA) b+=3;
     else {a++;b++;}
   });
 
   tabla.innerHTML=`
-  <div>${equipoA}: ${a} pts</div>
-  <div>${equipoB}: ${b} pts</div>`;
+  <div class="fila ${a>b?'lider':''}">
+    ${equipoA}: ${a} pts (DG: ${difA})
+  </div>
+  <div class="fila ${b>a?'lider':''}">
+    ${equipoB}: ${b} pts (DG: ${difB})
+  </div>`;
 }
 
 // INFO
 function renderInfo(){
   let jugados=datos.filter(p=>p.golesA!=null).length;
+
   fechaActual.innerText="Fecha "+jugados;
   jugadorTexto.innerHTML="<b>"+(jugadores[jugados-1]||"-")+"</b>";
+
   adminJugador.style.display=admin?"block":"none";
 }
 
@@ -254,7 +280,7 @@ function renderHistorial(){
     html+=`
     <div class="fila">
       Fecha ${i+1} (${p.fecha})<br>
-      Resultado: ${p.golesA}-${p.golesB}<br>
+      ${p.golesA}-${p.golesB}<br>
       MVP: ${jugadores[i]||"-"}
     </div>`;
   });
@@ -271,9 +297,9 @@ function renderRanking(){
 
   let arr=Object.entries(count).sort((a,b)=>b[1]-a[1]);
 
-  rankingContenido.innerHTML=arr.map(([n,c])=>`
-    <div class="fila">${n} - ${c}</div>
-  `).join("");
+  rankingContenido.innerHTML=arr.map(([n,c])=>
+    `<div class="fila">${n} - ${c}</div>`
+  ).join("");
 }
 
 // INIT
