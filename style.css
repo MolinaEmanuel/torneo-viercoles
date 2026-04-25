@@ -35,10 +35,12 @@ h2 {
   gap: 12px;
   flex-wrap: wrap;
   margin: 20px 0;
+  width: 100%;
 }
 
 .topbar button {
-  min-width: 120px;
+  box-sizing: border-box;
+  flex: 0 0 auto;
 }
 
 button {
