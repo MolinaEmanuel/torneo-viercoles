@@ -17,6 +17,19 @@ body > * {
   font-weight: bold;
 }
 
+.header-top {
+  position: relative;
+  text-align: center;
+}
+
+.header-top img {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 40px;
+}
+
 h1 {
   text-align: center;
   color: #ef4444;
