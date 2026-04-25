@@ -29,6 +29,7 @@ const equipoB = "Equipo HEBER";
 let admin = localStorage.getItem("admin") === "true";
 let datos = [];
 let jugadores = [];
+let planteles = { A: [], B: [] };
 
 /* NAV */
 window.mostrarSeccion = (id) => {
@@ -83,6 +84,7 @@ function cargarDatos(){
     if(docSnap.exists()){
       datos=docSnap.data().partidos;
       jugadores = docSnap.data().jugadores || new Array(datos.length).fill("");
+      planteles = docSnap.data().planteles || { A: [], B: [] };
     } else {
       datos=generarFechas().map(f=>({
         fecha:f.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit'}),
@@ -99,7 +101,8 @@ function cargarDatos(){
 function guardar(){
   setDoc(doc(db,"torneo","datos"),{
     partidos:datos,
-    jugadores:jugadores
+    jugadores:jugadores,
+    planteles:planteles
   });
 }
 
@@ -138,6 +141,18 @@ window.guardarJugador = () => {
   guardar();
 };
 
+window.agregarJugador = (equipo) => {
+  let input = document.getElementById("input" + equipo);
+  let nombre = input.value;
+
+  if (!nombre) return alert("Ingresá un nombre");
+
+  planteles[equipo].push(nombre);
+
+  input.value = "";
+  guardar();
+};
+
 /* RENDER */
 function renderAll(){
   renderPartidos();
@@ -145,6 +160,7 @@ function renderAll(){
   renderInfo();
   renderHistorial();
   renderRanking();
+  renderPlanteles();
 }
 
 function renderPartidos(){
@@ -240,6 +256,14 @@ function renderRanking(){
     .sort((a,b)=>b[1]-a[1])
     .map(([n,c])=>`<div class="fila">${n} - ${c}</div>`)
     .join("");
+}
+
+function renderPlanteles() {
+  listaA.innerHTML = planteles.A.map(j => `<div class="fila">${j}</div>`).join("");
+  listaB.innerHTML = planteles.B.map(j => `<div class="fila">${j}</div>`).join("");
+
+  adminA.style.display = admin ? "block" : "none";
+  adminB.style.display = admin ? "block" : "none";
 }
 
 /* INIT */

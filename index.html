@@ -18,6 +18,7 @@
 <!-- NAVBAR -->
 <div class="topbar">
   <button onclick="mostrarSeccion('inicio')">Inicio</button>
+  <button onclick="mostrarSeccion('plantel')">Plantel</button>
   <button onclick="mostrarSeccion('historial')">Historial</button>
   <button onclick="mostrarSeccion('ranking')">Ranking MVP</button>
   <button onclick="abrirLogin()">Modo admin</button>
@@ -66,6 +67,31 @@
 </div>
 
 <!-- HISTORIAL -->
+<div id="plantel" class="seccion" style="display:none;">
+  <div class="card">
+    <h2>👥 Planteles</h2>
+
+    <div class="plantel-box">
+      <h3>Equipo SEBA</h3>
+      <div id="listaA"></div>
+      <div id="adminA" style="display:none;">
+        <input type="text" id="inputA">
+        <button onclick="agregarJugador('A')">Agregar</button>
+      </div>
+    </div>
+
+    <div class="plantel-box">
+      <h3>Equipo HEBER</h3>
+      <div id="listaB"></div>
+      <div id="adminB" style="display:none;">
+        <input type="text" id="inputB">
+        <button onclick="agregarJugador('B')">Agregar</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <div id="historial" class="seccion" style="display:none;">
   <div class="card">
     <h2>📜 Historial</h2>
