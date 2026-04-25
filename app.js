@@ -261,18 +261,27 @@ function renderInfo(){
   adminJugador.style.display = admin ? "block" : "none";
 }
 
-function renderHistorial(){
-  let html="";
-  datos.forEach((p,i)=>{
-    if(p.golesA==null) return;
+function renderHistorial() {
+  historialContenido.innerHTML = datos.map((p, i) => `
+    <div class="fila">
+      <strong>Fecha ${i + 1} (${p.fecha})</strong><br>
 
-    html+=`<div class="fila">
-    Fecha ${i+1} (${p.fecha})<br>
-    ${p.golesA}-${p.golesB}<br>
-    MVP: ${jugadores[i]||"-"}
-    </div>`;
-  });
-  historialContenido.innerHTML=html;
+      ${p.golesA != null 
+        ? `Equipo Seba ${p.golesA}-${p.golesB} Equipo Heber`
+        : "Sin jugar"
+      }
+
+      <br>
+
+      ${
+        admin 
+        ? `<input value="${jugadores[i] || ""}" 
+            placeholder="MVP"
+            onchange="editarMVP(${i}, this.value)">`
+        : `MVP: ${jugadores[i] || "-"}`
+      }
+    </div>
+  `).join("");
 }
 
 function renderRanking(){
@@ -309,6 +318,11 @@ function renderPlanteles() {
     </div>
   `).join("");
 }
+
+window.editarMVP = (index, valor) => {
+  jugadores[index] = valor || "";
+  guardar();
+};
 
 window.toggleEquipo = (equipo) => {
   const lista = document.getElementById("lista" + equipo);
