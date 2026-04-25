@@ -38,6 +38,11 @@ body > * {
   transform: scale(1.08) rotate(-2deg);
 }
 
+.logo-principal {
+  background: transparent;
+  mix-blend-mode: lighten;
+}
+
 /* CENTRO */
 .header-center {
   text-align: center;
