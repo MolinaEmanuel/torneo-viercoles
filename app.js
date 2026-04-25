@@ -1,3 +1,13 @@
+const modalLogin = document.getElementById("modalLogin");
+const passwordInput = document.getElementById("passwordInput");
+const partidos = document.getElementById("partidos");
+const tabla = document.getElementById("tabla");
+const fechaActual = document.getElementById("fechaActual");
+const jugadorTexto = document.getElementById("jugadorTexto");
+const adminJugador = document.getElementById("adminJugador");
+const historialContenido = document.getElementById("historialContenido");
+const rankingContenido = document.getElementById("rankingContenido");
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -25,17 +35,12 @@ window.mostrarSeccion = (id) => {
   const secciones = document.querySelectorAll(".seccion");
 
   secciones.forEach(sec => {
-    if (sec.classList.contains("activa")) {
-      sec.classList.remove("activa");
-      sec.classList.add("saliendo");
-
-      setTimeout(() => {
-        sec.classList.remove("saliendo");
-      }, 400);
-    }
+    sec.classList.remove("activa", "saliendo");
+    sec.style.display = "none";
   });
 
   const nueva = document.getElementById(id);
+  nueva.style.display = "block";
 
   setTimeout(() => {
     nueva.classList.add("activa");
@@ -234,3 +239,4 @@ function renderRanking(){
 
 /* INIT */
 cargarDatos();
+
