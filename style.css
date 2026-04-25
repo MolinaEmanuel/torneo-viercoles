@@ -12,19 +12,22 @@ body > *:not(.header) {
 }
 
 .header {
-  width: 100%;
-  max-width: none;
-  padding: 20px 0;
-}
+  position: relative;
+  margin-top: -220px; /* 🔥 esto lo sube sobre el video */
+  z-index: 10;
 
-/* HEADER PRO */
-.header {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  margin-top: 10px;
+
   min-height: 140px;
+}
+
+.header,
+.topbar {
+  backdrop-filter: blur(6px);
+  background: rgba(2,6,23,0.4);
+  border-radius: 12px;
 }
 
 /* IZQUIERDA (LOGO PRINCIPAL) */
@@ -108,6 +111,9 @@ h2 {
   flex-wrap: wrap;
   margin: 20px auto;
   width: fit-content;
+  position: relative;
+  z-index: 10;
+  margin-top: -10px;
 }
 
 .topbar button {
@@ -328,19 +334,17 @@ input {
 
 /* 🎬 VIDEO BANNER PRO */
 .video-banner {
-  width: 100%;
-  height: 260px;
-  overflow: hidden;
   position: relative;
-  max-width: none !important;
-  padding: 0 !important;
+  width: 100%;
+  height: 320px;
+  overflow: hidden;
 }
 
 .video-banner video {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: brightness(0.55) contrast(1.1);
+  filter: brightness(0.45) contrast(1.1);
 }
 
 /* overlay oscuro pro */
@@ -363,7 +367,7 @@ input {
 @media (max-width: 600px) {
 
   .video-banner {
-  height: 160px;
+  height: 220px;
   }
 
   .header-left {
@@ -382,7 +386,7 @@ input {
 
   .header {
     flex-direction: column;
-    margin-top: -80px;
+    margin-top: -150px;
     z-index: 10;
   }
 
