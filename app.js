@@ -68,11 +68,20 @@ window.logout = () => {
 
 /* FECHAS */
 function generarFechas(){
-  let fechas=[], actual=new Date("2026-04-01");
-  while(fechas.length<18){
-    if(actual.getDay()===3) fechas.push(new Date(actual));
+  const fechas = [];
+  let actual = new Date(2026, 3, 1); // Abril (0-index)
+
+  while (fechas.length < 18) {
+    if (actual.getDay() === 3) {
+      fechas.push({
+        fecha: actual.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit'}),
+        golesA:null,
+        golesB:null
+      });
+    }
     actual.setDate(actual.getDate()+1);
   }
+
   return fechas;
 }
 
@@ -259,12 +268,45 @@ function renderRanking(){
 }
 
 function renderPlanteles() {
-  listaA.innerHTML = planteles.A.map(j => `<div class="fila">${j}</div>`).join("");
-  listaB.innerHTML = planteles.B.map(j => `<div class="fila">${j}</div>`).join("");
 
-  adminA.style.display = admin ? "block" : "none";
-  adminB.style.display = admin ? "block" : "none";
+  listaA.innerHTML = planteles.A.map((j,i) => `
+    <div class="fila">
+      ${admin ? `
+        <input value="${j}" onchange="editarJugador('A',${i},this.value)">
+        <button onclick="eliminarJugador('A',${i})">❌</button>
+      ` : j}
+    </div>
+  `).join("");
+
+  listaB.innerHTML = planteles.B.map((j,i) => `
+    <div class="fila">
+      ${admin ? `
+        <input value="${j}" onchange="editarJugador('B',${i},this.value)">
+        <button onclick="eliminarJugador('B',${i})">❌</button>
+      ` : j}
+    </div>
+  `).join("");
 }
+
+window.toggleEquipo = (equipo) => {
+  const lista = document.getElementById("lista" + equipo);
+
+  if (lista.style.display === "block") {
+    lista.style.display = "none";
+  } else {
+    lista.style.display = "block";
+  }
+};
+
+window.editarJugador = (equipo, index, valor) => {
+  planteles[equipo][index] = valor;
+  guardar();
+};
+
+window.eliminarJugador = (equipo, index) => {
+  planteles[equipo].splice(index, 1);
+  guardar();
+};
 
 /* INIT */
 cargarDatos();

@@ -204,4 +204,18 @@ input {
   margin-top: 10px;
 }
 
+.equipo-titulo {
+  background: #ef4444;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 15px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.equipo-lista {
+  display: none;
+  margin-top: 10px;
+}
 

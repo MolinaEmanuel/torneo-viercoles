@@ -39,12 +39,12 @@
 
 <div class="cards-top">
   <div class="card highlight">
-    <h3>📅 Fecha actual</h3>
+    <h3>Fecha actual</h3>
     <div id="fechaActual"></div>
   </div>
 
   <div class="card highlight">
-    <h3>🏅 Jugador de la fecha</h3>
+    <h3>Jugador de la fecha</h3>
     <div id="jugadorTexto"></div>
 
     <div id="adminJugador" style="display:none;">
@@ -66,27 +66,23 @@
 
 </div>
 
-<!-- HISTORIAL -->
+
 <div id="plantel" class="seccion" style="display:none;">
   <div class="card">
-    <h2>👥 Planteles</h2>
+    <h2>Planteles</h2>
 
-    <div class="plantel-box">
-      <h3>Equipo SEBA</h3>
-      <div id="listaA"></div>
-      <div id="adminA" style="display:none;">
-        <input type="text" id="inputA">
-        <button onclick="agregarJugador('A')">Agregar</button>
+    <div class="equipo">
+      <div class="equipo-titulo" onclick="toggleEquipo('A')">
+        Equipo SEBA
       </div>
+      <div id="listaA" class="equipo-lista"></div>
     </div>
 
-    <div class="plantel-box">
-      <h3>Equipo HEBER</h3>
-      <div id="listaB"></div>
-      <div id="adminB" style="display:none;">
-        <input type="text" id="inputB">
-        <button onclick="agregarJugador('B')">Agregar</button>
+    <div class="equipo">
+      <div class="equipo-titulo" onclick="toggleEquipo('B')">
+        Equipo HEBER
       </div>
+      <div id="listaB" class="equipo-lista"></div>
     </div>
 
   </div>
@@ -94,7 +90,7 @@
 
 <div id="historial" class="seccion" style="display:none;">
   <div class="card">
-    <h2>📜 Historial</h2>
+    <h2>Historial</h2>
     <div id="historialContenido"></div>
   </div>
 </div>
@@ -102,7 +98,7 @@
 <!-- RANKING -->
 <div id="ranking" class="seccion" style="display:none;">
   <div class="card">
-    <h2>🏅 Ranking MVP</h2>
+    <h2>Ranking MVP</h2>
     <div id="rankingContenido"></div>
   </div>
 </div>
