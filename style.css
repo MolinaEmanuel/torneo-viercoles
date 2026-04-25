@@ -5,10 +5,16 @@ body {
   margin: 0;
 }
 
-body > * {
+body > *:not(.header) {
   max-width: 900px;
   margin: auto;
   padding: 10px 20px;
+}
+
+.header {
+  width: 100%;
+  max-width: none;
+  padding: 20px 0;
 }
 
 /* HEADER PRO */
@@ -23,23 +29,20 @@ body > * {
 
 /* IZQUIERDA (LOGO PRINCIPAL) */
 .header-left {
+  position: absolute;
   left: 60px;
-  top: 0;
-  transform: scale(1.15);
+  top: 10px;
+  transform: scale(1.2);
 }
 
 .logo-principal {
-  height: 130px;
-  filter: drop-shadow(0 0 15px rgba(239,68,68,0.4));
+  height: 140px;
+  filter: drop-shadow(0 0 20px rgba(239,68,68,0.5));
   transition: all 0.3s ease;
-  opacity: 0;
-  transform: translateX(-20px);
-  animation: slideInLeft 0.6s ease forwards;
 }
 
 .logo-principal:hover {
-  transform: scale(1.2) rotate(-2deg);
-  filter: drop-shadow(0 0 25px rgba(239,68,68,0.7));
+  transform: scale(1.15) rotate(-2deg);
 }
 
 .logo-principal {
@@ -325,24 +328,27 @@ input {
 
 @media (max-width: 600px) {
 
+  .header-left {
+    position: static;
+    transform: scale(1);
+  }
+
+  .logo-principal {
+    height: 70px;
+  }
+
+
   body > * {
     padding: 10px;
   }
-
-  @media (max-width: 600px) {
 
   .header {
     flex-direction: column;
   }
 
-  .header-left,
   .header-right {
     position: static;
     margin: 5px 0;
-  }
-
-  .header-left {
-  transform: scale(1);
   }
 
   .logo-principal {
@@ -352,7 +358,7 @@ input {
   .logo-secundario {
     height: 30px;
   }
-}
+
 
   h1 {
     font-size: 22px;
