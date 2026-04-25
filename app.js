@@ -7,6 +7,7 @@ const jugadorTexto = document.getElementById("jugadorTexto");
 const adminJugador = document.getElementById("adminJugador");
 const historialContenido = document.getElementById("historialContenido");
 const rankingContenido = document.getElementById("rankingContenido");
+const loader = document.getElementById("loader");
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -33,6 +34,8 @@ let planteles = { A: [], B: [] };
 
 /* NAV */
 window.mostrarSeccion = (id) => {
+  loader.classList.remove("hidden");
+
   const secciones = document.querySelectorAll(".seccion");
 
   secciones.forEach(sec => {
@@ -54,7 +57,8 @@ window.mostrarSeccion = (id) => {
 
   setTimeout(() => {
     nueva.classList.add("activa");
-  }, 50);
+    loader.classList.add("hidden");
+  }, 200);
 };
 
 /* LOGIN */
@@ -97,6 +101,9 @@ function generarFechas(){
 /* FIREBASE */
 function cargarDatos(){
   const ref=doc(db,"torneo","datos");
+  setTimeout(() => {
+  loader.classList.add("hidden");
+}, 500);
 
   onSnapshot(ref,(docSnap)=>{
     if(docSnap.exists()){
