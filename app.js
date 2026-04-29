@@ -48,7 +48,7 @@ window.mostrarSeccion = (id) => {
       setTimeout(() => {
         sec.style.display = "none";
         sec.classList.remove("saliendo");
-      }, 300);
+      }, 500); // 🔥 más lenta
     } else {
       sec.style.display = "none";
     }
@@ -60,7 +60,7 @@ window.mostrarSeccion = (id) => {
   setTimeout(() => {
     nueva.classList.add("activa");
     loader.classList.add("hidden");
-  }, 200);
+  }, 250);
 };
 
 /* LOGIN */
@@ -305,21 +305,15 @@ function renderRanking(){
 
 function renderPlanteles() {
 
-  listaA.innerHTML = planteles.A.map((j,i) => `
-    <div class="fila">
-      ${admin ? `
-        <input value="${j}" onchange="editarJugador('A',${i},this.value)">
-        <button onclick="eliminarJugador('A',${i})">❌</button>
-      ` : j}
+  listaA.innerHTML = planteles.A.map(j => `
+    <div class="fila jugador" onclick='verJugador(${JSON.stringify(j)})'>
+      ${j.nombre}
     </div>
   `).join("");
 
-  listaB.innerHTML = planteles.B.map((j,i) => `
-    <div class="fila">
-      ${admin ? `
-        <input value="${j}" onchange="editarJugador('B',${i},this.value)">
-        <button onclick="eliminarJugador('B',${i})">❌</button>
-      ` : j}
+  listaB.innerHTML = planteles.B.map(j => `
+    <div class="fila jugador" onclick='verJugador(${JSON.stringify(j)})'>
+      ${j.nombre}
     </div>
   `).join("");
 }
@@ -347,6 +341,28 @@ window.editarJugador = (equipo, index, valor) => {
 window.eliminarJugador = (equipo, index) => {
   planteles[equipo].splice(index, 1);
   guardar();
+};
+
+window.verJugador = (jugador) => {
+  document.getElementById("fotoJugador").src = jugador.foto;
+  document.getElementById("nombreJugador").innerText = jugador.nombre;
+  document.getElementById("alturaJugador").innerText = "Altura: " + jugador.altura;
+
+  const modal = document.getElementById("modalJugador");
+  modal.style.display = "block";
+
+  setTimeout(() => {
+    modal.classList.add("activo");
+  }, 10);
+};
+
+window.cerrarJugador = () => {
+  const modal = document.getElementById("modalJugador");
+  modal.classList.remove("activo");
+
+  setTimeout(() => {
+    modal.style.display = "none";
+  }, 400);
 };
 
 /* INIT */

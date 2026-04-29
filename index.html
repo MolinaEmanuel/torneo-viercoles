@@ -8,6 +8,19 @@
 <link rel="icon" href="assets/images//logo/isologo FV.png" type="image/png">
 </head>
 
+<div id="modalJugador" class="modal-jugador">
+  <div class="overlay" onclick="cerrarJugador()"></div>
+
+  <div class="card-jugador">
+    <img id="fotoJugador">
+
+    <h2 id="nombreJugador"></h2>
+    <p id="alturaJugador"></p>
+
+    <button onclick="cerrarJugador()">Cerrar</button>
+  </div>
+</div>
+
 <body>
 
 <div id="loader" class="loader">
@@ -98,6 +111,7 @@
         Equipo SEBA
       </div>
       <div id="listaA" class="equipo-lista"></div>
+      <img src="assets/images/equipos/equipoSeba.jpg" class="foto-equipo">
     </div>
 
     <div class="equipo">
@@ -105,6 +119,7 @@
         Equipo HEBER
       </div>
       <div id="listaB" class="equipo-lista"></div>
+      <img src="assets/images/equipos/equipoHeber.jpg" class="foto-equipo">
     </div>
 
   </div>
