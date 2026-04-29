@@ -117,6 +117,14 @@ function cargarDatos(){
 
       jugadores = data.jugadores || new Array(datos.length).fill("");
       planteles = data.planteles || { A: [], B: [] };
+      ["A","B"].forEach(eq => {
+        planteles[eq] = (planteles[eq] || []).map(j => {
+          if (typeof j === "string") {
+            return { nombre: j, altura: "-", foto: "" };
+          }
+        return j;
+      });
+    });
 
     } else {
       datos = generarFechas();
@@ -178,14 +186,19 @@ window.guardarJugador = () => {
 };
 
 window.agregarJugador = (equipo) => {
-  let input = document.getElementById("input" + equipo);
-  let nombre = input.value;
 
-  if (!nombre) return alert("Ingresá un nombre");
+  let nombre = prompt("Nombre completo");
+  if (!nombre) return;
 
-  planteles[equipo].push(nombre);
+  let altura = prompt("Altura (ej: 1.75)") || "-";
+  let foto = prompt("Ruta foto (ej: assets/images/jugadores/juan.jpg)") || "";
 
-  input.value = "";
+  planteles[equipo].push({
+    nombre,
+    altura,
+    foto
+  });
+
   guardar();
 };
 
@@ -305,15 +318,33 @@ function renderRanking(){
 
 function renderPlanteles() {
 
-  listaA.innerHTML = planteles.A.map(j => `
-    <div class="fila jugador" onclick='verJugador(${JSON.stringify(j)})'>
-      ${j.nombre}
+  listaA.innerHTML = planteles.A.map((j,i) => `
+    <div class="fila jugador">
+
+      ${
+        admin
+        ? `<input value="${j.nombre || ""}" 
+             onchange="editarJugador('A',${i}, this.value)">`
+        : `<span onclick='verJugador(${JSON.stringify(j)})'>
+             ${j.nombre}
+           </span>`
+      }
+
     </div>
   `).join("");
 
-  listaB.innerHTML = planteles.B.map(j => `
-    <div class="fila jugador" onclick='verJugador(${JSON.stringify(j)})'>
-      ${j.nombre}
+  listaB.innerHTML = planteles.B.map((j,i) => `
+    <div class="fila jugador">
+
+      ${
+        admin
+        ? `<input value="${j.nombre || ""}" 
+             onchange="editarJugador('B',${i}, this.value)">`
+        : `<span onclick='verJugador(${JSON.stringify(j)})'>
+             ${j.nombre}
+           </span>`
+      }
+
     </div>
   `).join("");
 }
@@ -334,7 +365,7 @@ window.toggleEquipo = (equipo) => {
 };
 
 window.editarJugador = (equipo, index, valor) => {
-  planteles[equipo][index] = valor;
+  planteles[equipo][index].nombre = valor;
   guardar();
 };
 
