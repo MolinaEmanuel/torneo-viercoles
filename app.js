@@ -108,32 +108,18 @@ function cargarDatos(){
     if(docSnap.exists()){
       const data = docSnap.data();
 
-      datos = data.partidos || [];
-
-      if(datos.length < 18){
-        const nuevas = generarFechas();
-        datos = nuevas.map((f,i)=> datos[i] || f);
-      }
-
+      datos = data.partidos || generarFechas();
       jugadores = data.jugadores || new Array(datos.length).fill("");
 
-      // 🔥 PLANTELES SEGUROS
       planteles = data.planteles || { A: [], B: [] };
 
+      // 🔥 normalización segura
       ["A","B"].forEach(eq => {
-        planteles[eq] = (planteles[eq] || [])
-          .filter(j => j && (typeof j === "string" || typeof j === "object"))
-          .map(j => {
-            if (typeof j === "string") {
-              return { nombre: j, altura: "-", foto: "" };
-            }
-
-            return {
-              nombre: j.nombre || "-",
-              altura: j.altura || "-",
-              foto: j.foto || ""
-            };
-          });
+        planteles[eq] = (planteles[eq] || []).map(j => ({
+          nombre: j?.nombre || "-",
+          altura: j?.altura || "-",
+          foto: j?.foto || ""
+        }));
       });
 
     } else {
@@ -200,11 +186,7 @@ window.agregarJugador = (equipo) => {
   if (!nombre) return;
 
   let altura = prompt("Altura (ej: 1.75)") || "-";
-  let foto = prompt("Ruta foto (ej: assets/images/jugadores/juan.jpg)") || "";
-
-  if (!planteles[equipo]) {
-    planteles[equipo] = [];
-  }
+  let foto = prompt("Ruta foto") || "";
 
   planteles[equipo].push({
     nombre: nombre.trim(),
@@ -331,61 +313,44 @@ function renderRanking(){
 
 function renderPlanteles() {
 
-  // Mostrar botones admin
   document.getElementById("adminA").style.display = admin ? "block" : "none";
   document.getElementById("adminB").style.display = admin ? "block" : "none";
 
-  // EQUIPO A
-  listaA.innerHTML = planteles.A.map((j,i) => {
-    if (!j) return "";
+  listaA.innerHTML = planteles.A.map((j,i) => `
+    <div class="fila jugador">
+      ${
+        admin
+        ? `
+          <input value="${j.nombre}" 
+            onchange="editarJugador('A',${i}, this.value)">
+          <button onclick="eliminarJugador('A',${i})">❌</button>
+        `
+        : `
+          <span onclick='verJugador(${JSON.stringify(j)})'>
+            ${j.nombre}
+          </span>
+        `
+      }
+    </div>
+  `).join("");
 
-    return `
-      <div class="fila jugador">
-
-        ${
-          admin
-          ? `
-            <input value="${j.nombre}" 
-              onchange="editarJugador('A',${i}, this.value)">
-            
-            <button onclick="eliminarJugador('A',${i})">❌</button>
-          `
-          : `
-            <span onclick='verJugador(${JSON.stringify(j)})'>
-              ${j.nombre}
-            </span>
-          `
-        }
-
-      </div>
-    `;
-  }).join("");
-
-  // EQUIPO B
-  listaB.innerHTML = planteles.B.map((j,i) => {
-    if (!j) return "";
-
-    return `
-      <div class="fila jugador">
-
-        ${
-          admin
-          ? `
-            <input value="${j.nombre}" 
-              onchange="editarJugador('B',${i}, this.value)">
-            
-            <button onclick="eliminarJugador('B',${i})">❌</button>
-          `
-          : `
-            <span onclick='verJugador(${JSON.stringify(j)})'>
-              ${j.nombre}
-            </span>
-          `
-        }
-
-      </div>
-    `;
-  }).join("");
+  listaB.innerHTML = planteles.B.map((j,i) => `
+    <div class="fila jugador">
+      ${
+        admin
+        ? `
+          <input value="${j.nombre}" 
+            onchange="editarJugador('B',${i}, this.value)">
+          <button onclick="eliminarJugador('B',${i})">❌</button>
+        `
+        : `
+          <span onclick='verJugador(${JSON.stringify(j)})'>
+            ${j.nombre}
+          </span>
+        `
+      }
+    </div>
+  `).join("");
 }
 
 window.editarMVP = (index, valor) => {
@@ -404,7 +369,6 @@ window.toggleEquipo = (equipo) => {
 };
 
 window.editarJugador = (equipo, index, valor) => {
-
   if (!planteles[equipo] || !planteles[equipo][index]) return;
 
   planteles[equipo][index].nombre = valor.trim() || "-";
@@ -413,7 +377,6 @@ window.editarJugador = (equipo, index, valor) => {
 };
 
 window.eliminarJugador = (equipo, index) => {
-
   if (!planteles[equipo]) return;
 
   planteles[equipo].splice(index, 1);
