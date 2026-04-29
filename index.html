@@ -104,19 +104,33 @@
   <div class="card">
     <h2>Planteles</h2>
 
+    <!-- EQUIPO A -->
     <div class="equipo">
       <div class="equipo-titulo" onclick="toggleEquipo('A')">
         Equipo SEBA
       </div>
+
+      <div id="adminA" style="display:none; text-align:center; margin-top:10px;">
+        <button onclick="agregarJugador('A')">+ Agregar jugador</button>
+      </div>
+
       <div id="listaA" class="equipo-lista"></div>
+
       <img src="assets/images/equipos/equipoSeba.jpg" class="foto-equipo">
     </div>
 
+    <!-- EQUIPO B -->
     <div class="equipo">
       <div class="equipo-titulo" onclick="toggleEquipo('B')">
         Equipo HEBER
       </div>
+
+      <div id="adminB" style="display:none; text-align:center; margin-top:10px;">
+        <button onclick="agregarJugador('B')">+ Agregar jugador</button>
+      </div>
+
       <div id="listaB" class="equipo-lista"></div>
+
       <img src="assets/images/equipos/equipoHeber.jpg" class="foto-equipo">
     </div>
 

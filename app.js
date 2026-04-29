@@ -331,36 +331,58 @@ function renderRanking(){
 
 function renderPlanteles() {
 
+  // Mostrar botones admin
+  document.getElementById("adminA").style.display = admin ? "block" : "none";
+  document.getElementById("adminB").style.display = admin ? "block" : "none";
+
+  // EQUIPO A
   listaA.innerHTML = planteles.A.map((j,i) => {
     if (!j) return "";
 
     return `
       <div class="fila jugador">
+
         ${
           admin
-          ? `<input value="${j.nombre}" 
-               onchange="editarJugador('A',${i}, this.value)">`
-          : `<span onclick='verJugador(${JSON.stringify(j)})'>
-               ${j.nombre}
-             </span>`
+          ? `
+            <input value="${j.nombre}" 
+              onchange="editarJugador('A',${i}, this.value)">
+            
+            <button onclick="eliminarJugador('A',${i})">❌</button>
+          `
+          : `
+            <span onclick='verJugador(${JSON.stringify(j)})'>
+              ${j.nombre}
+            </span>
+          `
         }
+
       </div>
     `;
   }).join("");
 
+  // EQUIPO B
   listaB.innerHTML = planteles.B.map((j,i) => {
     if (!j) return "";
 
     return `
       <div class="fila jugador">
+
         ${
           admin
-          ? `<input value="${j.nombre}" 
-               onchange="editarJugador('B',${i}, this.value)">`
-          : `<span onclick='verJugador(${JSON.stringify(j)})'>
-               ${j.nombre}
-             </span>`
+          ? `
+            <input value="${j.nombre}" 
+              onchange="editarJugador('B',${i}, this.value)">
+            
+            <button onclick="eliminarJugador('B',${i})">❌</button>
+          `
+          : `
+            <span onclick='verJugador(${JSON.stringify(j)})'>
+              ${j.nombre}
+            </span>
+          `
         }
+
       </div>
     `;
   }).join("");
@@ -382,14 +404,20 @@ window.toggleEquipo = (equipo) => {
 };
 
 window.editarJugador = (equipo, index, valor) => {
+
   if (!planteles[equipo] || !planteles[equipo][index]) return;
 
   planteles[equipo][index].nombre = valor.trim() || "-";
+
   guardar();
 };
 
 window.eliminarJugador = (equipo, index) => {
+
+  if (!planteles[equipo]) return;
+
   planteles[equipo].splice(index, 1);
+
   guardar();
 };
 
