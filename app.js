@@ -116,15 +116,25 @@ function cargarDatos(){
       }
 
       jugadores = data.jugadores || new Array(datos.length).fill("");
+
+      // 🔥 PLANTELES SEGUROS
       planteles = data.planteles || { A: [], B: [] };
+
       ["A","B"].forEach(eq => {
-        planteles[eq] = (planteles[eq] || []).map(j => {
-          if (typeof j === "string") {
-            return { nombre: j, altura: "-", foto: "" };
-          }
-        return j;
+        planteles[eq] = (planteles[eq] || [])
+          .filter(j => j && (typeof j === "string" || typeof j === "object"))
+          .map(j => {
+            if (typeof j === "string") {
+              return { nombre: j, altura: "-", foto: "" };
+            }
+
+            return {
+              nombre: j.nombre || "-",
+              altura: j.altura || "-",
+              foto: j.foto || ""
+            };
+          });
       });
-    });
 
     } else {
       datos = generarFechas();
@@ -135,7 +145,6 @@ function cargarDatos(){
 
     renderAll();
 
-    // 🔥 loader se oculta cuando realmente terminó
     setTimeout(() => {
       loader.classList.add("hidden");
     }, 300);
@@ -193,10 +202,14 @@ window.agregarJugador = (equipo) => {
   let altura = prompt("Altura (ej: 1.75)") || "-";
   let foto = prompt("Ruta foto (ej: assets/images/jugadores/juan.jpg)") || "";
 
+  if (!planteles[equipo]) {
+    planteles[equipo] = [];
+  }
+
   planteles[equipo].push({
-    nombre,
-    altura,
-    foto
+    nombre: nombre.trim(),
+    altura: altura.trim(),
+    foto: foto.trim()
   });
 
   guardar();
@@ -318,35 +331,39 @@ function renderRanking(){
 
 function renderPlanteles() {
 
-  listaA.innerHTML = planteles.A.map((j,i) => `
-    <div class="fila jugador">
+  listaA.innerHTML = planteles.A.map((j,i) => {
+    if (!j) return "";
 
-      ${
-        admin
-        ? `<input value="${j.nombre || ""}" 
-             onchange="editarJugador('A',${i}, this.value)">`
-        : `<span onclick='verJugador(${JSON.stringify(j)})'>
-             ${j.nombre}
-           </span>`
-      }
+    return `
+      <div class="fila jugador">
+        ${
+          admin
+          ? `<input value="${j.nombre}" 
+               onchange="editarJugador('A',${i}, this.value)">`
+          : `<span onclick='verJugador(${JSON.stringify(j)})'>
+               ${j.nombre}
+             </span>`
+        }
+      </div>
+    `;
+  }).join("");
 
-    </div>
-  `).join("");
+  listaB.innerHTML = planteles.B.map((j,i) => {
+    if (!j) return "";
 
-  listaB.innerHTML = planteles.B.map((j,i) => `
-    <div class="fila jugador">
-
-      ${
-        admin
-        ? `<input value="${j.nombre || ""}" 
-             onchange="editarJugador('B',${i}, this.value)">`
-        : `<span onclick='verJugador(${JSON.stringify(j)})'>
-             ${j.nombre}
-           </span>`
-      }
-
-    </div>
-  `).join("");
+    return `
+      <div class="fila jugador">
+        ${
+          admin
+          ? `<input value="${j.nombre}" 
+               onchange="editarJugador('B',${i}, this.value)">`
+          : `<span onclick='verJugador(${JSON.stringify(j)})'>
+               ${j.nombre}
+             </span>`
+        }
+      </div>
+    `;
+  }).join("");
 }
 
 window.editarMVP = (index, valor) => {
@@ -365,7 +382,9 @@ window.toggleEquipo = (equipo) => {
 };
 
 window.editarJugador = (equipo, index, valor) => {
-  planteles[equipo][index].nombre = valor;
+  if (!planteles[equipo] || !planteles[equipo][index]) return;
+
+  planteles[equipo][index].nombre = valor.trim() || "-";
   guardar();
 };
 
@@ -375,9 +394,12 @@ window.eliminarJugador = (equipo, index) => {
 };
 
 window.verJugador = (jugador) => {
-  document.getElementById("fotoJugador").src = jugador.foto;
-  document.getElementById("nombreJugador").innerText = jugador.nombre;
-  document.getElementById("alturaJugador").innerText = "Altura: " + jugador.altura;
+
+  if (!jugador) return;
+
+  document.getElementById("fotoJugador").src = jugador.foto || "";
+  document.getElementById("nombreJugador").innerText = jugador.nombre || "-";
+  document.getElementById("alturaJugador").innerText = "Altura: " + (jugador.altura || "-");
 
   const modal = document.getElementById("modalJugador");
   modal.style.display = "block";
