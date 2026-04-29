@@ -48,7 +48,7 @@ window.mostrarSeccion = (id) => {
       setTimeout(() => {
         sec.style.display = "none";
         sec.classList.remove("saliendo");
-      }, 500); // 🔥 más lenta
+      }, 300);
     } else {
       sec.style.display = "none";
     }
@@ -60,7 +60,7 @@ window.mostrarSeccion = (id) => {
   setTimeout(() => {
     nueva.classList.add("activa");
     loader.classList.add("hidden");
-  }, 250);
+  }, 200);
 };
 
 /* LOGIN */
@@ -108,40 +108,15 @@ function cargarDatos(){
     if(docSnap.exists()){
       const data = docSnap.data();
 
-      // PARTIDOS
-      datos = data.partidos || generarFechas();
+      datos = data.partidos || [];
 
-      // MVPs
-      jugadores = data.jugadores || new Array(datos.length).fill("");
-
-      // 🔥 PLANTELES LIMPIOS SIEMPRE
-      planteles = { A: [], B: [] };
-
-      if (data.planteles) {
-
-        // EQUIPO A
-        if (Array.isArray(data.planteles.A)) {
-          planteles.A = data.planteles.A
-            .filter(j => j && typeof j === "object")
-            .map(j => ({
-              nombre: j.nombre || "-",
-              altura: j.altura || "-",
-              foto: j.foto || ""
-            }));
-        }
-
-        // EQUIPO B
-        if (Array.isArray(data.planteles.B)) {
-          planteles.B = data.planteles.B
-            .filter(j => j && typeof j === "object")
-            .map(j => ({
-              nombre: j.nombre || "-",
-              altura: j.altura || "-",
-              foto: j.foto || ""
-            }));
-        }
-
+      if(datos.length < 18){
+        const nuevas = generarFechas();
+        datos = nuevas.map((f,i)=> datos[i] || f);
       }
+
+      jugadores = data.jugadores || new Array(datos.length).fill("");
+      planteles = data.planteles || { A: [], B: [] };
 
     } else {
       datos = generarFechas();
@@ -152,6 +127,7 @@ function cargarDatos(){
 
     renderAll();
 
+    // 🔥 loader se oculta cuando realmente terminó
     setTimeout(() => {
       loader.classList.add("hidden");
     }, 300);
@@ -202,19 +178,14 @@ window.guardarJugador = () => {
 };
 
 window.agregarJugador = (equipo) => {
+  let input = document.getElementById("input" + equipo);
+  let nombre = input.value;
 
-  let nombre = prompt("Nombre completo");
-  if (!nombre) return;
+  if (!nombre) return alert("Ingresá un nombre");
 
-  let altura = prompt("Altura (ej: 1.75)") || "-";
-  let foto = prompt("Ruta foto") || "";
+  planteles[equipo].push(nombre);
 
-  planteles[equipo].push({
-    nombre: nombre.trim(),
-    altura: altura.trim(),
-    foto: foto.trim()
-  });
-
+  input.value = "";
   guardar();
 };
 
@@ -335,38 +306,20 @@ function renderRanking(){
 function renderPlanteles() {
 
   listaA.innerHTML = planteles.A.map((j,i) => `
-    <div class="fila jugador">
-      ${
-        admin
-        ? `
-          <input value="${j.nombre}" 
-            onchange="editarJugador('A',${i}, this.value)">
-          <button onclick="eliminarJugador('A',${i})">❌</button>
-        `
-        : `
-          <span onclick='verJugador(${JSON.stringify(j)})'>
-            ${j.nombre}
-          </span>
-        `
-      }
+    <div class="fila">
+      ${admin ? `
+        <input value="${j}" onchange="editarJugador('A',${i},this.value)">
+        <button onclick="eliminarJugador('A',${i})">❌</button>
+      ` : j}
     </div>
   `).join("");
 
   listaB.innerHTML = planteles.B.map((j,i) => `
-    <div class="fila jugador">
-      ${
-        admin
-        ? `
-          <input value="${j.nombre}" 
-            onchange="editarJugador('B',${i}, this.value)">
-          <button onclick="eliminarJugador('B',${i})">❌</button>
-        `
-        : `
-          <span onclick='verJugador(${JSON.stringify(j)})'>
-            ${j.nombre}
-          </span>
-        `
-      }
+    <div class="fila">
+      ${admin ? `
+        <input value="${j}" onchange="editarJugador('B',${i},this.value)">
+        <button onclick="eliminarJugador('B',${i})">❌</button>
+      ` : j}
     </div>
   `).join("");
 }
@@ -387,45 +340,15 @@ window.toggleEquipo = (equipo) => {
 };
 
 window.editarJugador = (equipo, index, valor) => {
-  if (!planteles[equipo] || !planteles[equipo][index]) return;
-
-  planteles[equipo][index].nombre = valor.trim() || "-";
-
+  planteles[equipo][index] = valor;
   guardar();
 };
 
 window.eliminarJugador = (equipo, index) => {
-  if (!planteles[equipo]) return;
-
   planteles[equipo].splice(index, 1);
-
   guardar();
-};
-
-window.verJugador = (jugador) => {
-
-  if (!jugador) return;
-
-  document.getElementById("fotoJugador").src = jugador.foto || "";
-  document.getElementById("nombreJugador").innerText = jugador.nombre || "-";
-  document.getElementById("alturaJugador").innerText = "Altura: " + (jugador.altura || "-");
-
-  const modal = document.getElementById("modalJugador");
-  modal.style.display = "block";
-
-  setTimeout(() => {
-    modal.classList.add("activo");
-  }, 10);
-};
-
-window.cerrarJugador = () => {
-  const modal = document.getElementById("modalJugador");
-  modal.classList.remove("activo");
-
-  setTimeout(() => {
-    modal.style.display = "none";
-  }, 400);
 };
 
 /* INIT */
 cargarDatos();
+
