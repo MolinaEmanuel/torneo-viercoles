@@ -448,6 +448,3 @@ window.cerrarJugador = () => {
 
 /* INIT */
 cargarDatos();
-
-planteles = { A: [], B: [] };
-guardar();
