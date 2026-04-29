@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Futbol Viércoles</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="assets/images//logo/isologo FV.png" type="image/png">
+</head>
+
+<body>
+
+<div id="loader" class="loader">
+  <div class="spinner"></div>
+</div>
+
+<div class="video-banner">
+  <video autoplay muted loop playsinline>
+    <source src="assets/video/video web.mp4" type="video/mp4">
+  </video>
+</div>
+
+<div class="header">
+
+  <div class="header-left">
+    <img src="assets/images//logo/logo futbol viercoles.png" alt="logo futbol viercoles" class="logo-principal">
+  </div>
+
+  <div class="header-center">
+    <h1>Torneo Apertura 2026</h1>
+    <h2>Julio "Messi" Gimenez</h2>
+  </div>
+
+  <div class="header-right">
+    <img src="assets/images//logo/logo conmebol.png" alt="logo conmebol" class="logo-secundario">
+  </div>
+
+</div>
+
+<!-- NAVBAR -->
+<div class="topbar">
+  <button onclick="mostrarSeccion('inicio')">Inicio</button>
+  <button onclick="mostrarSeccion('plantel')">Plantel</button>
+  <button onclick="mostrarSeccion('historial')">Historial</button>
+  <button onclick="mostrarSeccion('ranking')">Ranking MVP</button>
+  <button onclick="abrirLogin()">Modo Admin</button>
+  <button onclick="logout()">Salir Admin</button>
+</div>
+
+<!-- LOGIN -->
+<div id="modalLogin" class="modal">
+  <div class="modal-content">
+    <h3>Ingreso admin</h3>
+    <input type="password" id="passwordInput">
+    <button onclick="verificarLogin()">Ingresar</button>
+  </div>
+</div>
+
+<!-- INICIO -->
+<div id="inicio" class="seccion activa">
+
+<div class="cards-top">
+  <div class="card highlight">
+    <h3>Fecha actual</h3>
+    <div id="fechaActual"></div>
+  </div>
+
+  <div class="card highlight">
+    <h3>Jugador de la fecha</h3>
+    <div id="jugadorTexto"></div>
+
+    <div id="adminJugador" style="display:none;">
+      <input type="text" id="inputJugador">
+      <button onclick="guardarJugador()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Tabla de posiciones</h2>
+  <div id="tabla"></div>
+</div>
+
+<div class="card">
+  <h2>Partidos</h2>
+  <table id="partidos"></table>
+</div>
+
+</div>
+
+
+<div id="plantel" class="seccion" style="display:none;">
+  <div class="card">
+    <h2>Planteles</h2>
+
+    <div class="equipo">
+      <div class="equipo-titulo" onclick="toggleEquipo('A')">
+        Equipo SEBA
+      </div>
+      <div id="listaA" class="equipo-lista"></div>
+    </div>
+
+    <div class="equipo">
+      <div class="equipo-titulo" onclick="toggleEquipo('B')">
+        Equipo HEBER
+      </div>
+      <div id="listaB" class="equipo-lista"></div>
+    </div>
+
+  </div>
+</div>
+
+<div id="historial" class="seccion" style="display:none;">
+  <div class="card">
+    <h2>Historial</h2>
+    <div id="historialContenido"></div>
+  </div>
+</div>
+
+<!-- RANKING -->
+<div id="ranking" class="seccion" style="display:none;">
+  <div class="card">
+    <h2>Ranking MVP</h2>
+    <div id="rankingContenido"></div>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+
+</body>
+</html>

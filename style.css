@@ -1,0 +1,446 @@
+body {
+  font-family: 'Segoe UI', Arial;
+  background: linear-gradient(135deg, #020617, #0f172a);
+  color: white;
+  margin: 0;
+}
+
+body > *:not(.header) {
+  max-width: 900px;
+  margin: auto;
+  padding: 10px 20px;
+}
+
+.header {
+  position: relative;
+  margin-top: -300px; /* acompaña nuevo tamaño */
+  z-index: 10;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 140px;
+}
+
+.header,
+.topbar {
+  backdrop-filter: blur(6px);
+  background: rgba(2,6,23,0.4);
+  border-radius: 12px;
+}
+
+/* IZQUIERDA (LOGO PRINCIPAL) */
+.header-left {
+  position: absolute;
+  left: 60px;
+  top: 10px;
+  transform: scale(1.2);
+}
+
+.logo-principal {
+  height: 140px;
+  filter: drop-shadow(0 0 20px rgba(239,68,68,0.5));
+  transition: all 0.3s ease;
+  background: transparent;
+  mix-blend-mode: lighten;
+}
+
+.logo-principal:hover {
+  transform: scale(1.15) rotate(-2deg);
+}
+
+/* CENTRO */
+.header-center {
+  text-align: center;
+  animation: fadeIn 0.8s ease;
+}
+
+/* DERECHA (CONMEBOL) */
+.header-right {
+  position: absolute;
+  right: 20px;
+}
+
+.logo-secundario {
+  height: 40px;
+  opacity: 0;
+  transform: translateX(20px);
+  animation: slideInRight 0.6s ease forwards;
+  transition: transform 0.3s ease;
+}
+
+.logo-secundario:hover {
+  transform: scale(1.08);
+}
+
+/* ANIMACIONES */
+@keyframes slideInLeft {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+h1 {
+  text-align: center;
+  color: #ef4444;
+}
+
+h2 {
+  text-align: center;
+  color: #ffffff;
+}
+
+/* ✅ FIX BOTONES CENTRADOS */
+.topbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 20px auto;
+  width: fit-content;
+  position: relative;
+  z-index: 10;
+  margin-top: -10px;
+}
+
+.topbar button {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+}
+
+button {
+  background: #ef4444;
+  border: none;
+  padding: 10px;
+  color: white;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(239,68,68,0.4);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+.card {
+  background: linear-gradient(145deg, #0f172a, #1e293b);
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.cards-top {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.highlight {
+  flex: 1;
+  min-width: 250px;
+  border-left: 4px solid #ef4444;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: #ef4444;
+  padding: 10px;
+}
+
+td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #334155;
+}
+
+input {
+  width: 50px;
+  text-align: center;
+}
+
+.fila {
+  padding: 10px;
+  margin: 5px 0;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+}
+
+.lider {
+  background: linear-gradient(90deg, gold, orange);
+  color: black;
+}
+
+/* MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  justify-content: center;
+  align-items: center;
+
+  z-index: 9999; /* 🔥 CLAVE */
+}
+
+.modal-content {
+  background:#1e293b;
+  padding:20px;
+  border-radius:10px;
+}
+
+/* CONTENEDOR SECCIONES */
+#inicio, #historial, #ranking, #plantel {
+  position: relative;
+  width: 100%;
+  transition: all 0.4s ease;
+}
+
+/* ESTADO OCULTO */
+.seccion {
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+  transition: all 0.35s ease;
+}
+
+.seccion.activa {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+  position: relative;
+}
+
+.seccion.saliendo {
+  opacity: 0;
+  transform: translateY(-20px) scale(0.98);
+}
+
+/* ANIMACIÓN SUAVE GLOBAL */
+.fade-in {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+
+.modal-content {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+  z-index: 10000;
+}
+
+.plantel-box {
+  margin-top: 20px;
+}
+
+.plantel-box h3 {
+  color: #ef4444;
+}
+
+.plantel-box div {
+  margin-top: 10px;
+}
+
+.equipo-titulo {
+  background: #ef4444;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 15px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.equipo-lista {
+  display: none;
+  margin-top: 10px;
+}
+
+.loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #020617;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  transition: opacity 0.4s ease;
+  max-width: none !important;
+  padding: 0 !important;
+}
+
+.loader.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255,255,255,0.1);
+  border-top: 4px solid #ef4444;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.fila strong {
+  color: #ef4444;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.fila input {
+  margin-top: 5px;
+  width: 120px;
+}
+
+/* 🎬 VIDEO BANNER PRO */
+.video-banner {
+  position: relative;
+  width: 100%;
+  height: 460px;
+  overflow: hidden;
+}
+
+.video-banner video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.45) contrast(1.1);
+  transform: scale(1.05);
+}
+
+/* overlay oscuro pro */
+.video-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(2,6,23,0.2),
+    rgba(2,6,23,0.9)
+  );
+}
+
+/* animación de entrada */
+.video-banner {
+  animation: fadeIn 1s ease;
+}
+
+@media (max-width: 600px) {
+
+  .video-banner {
+  height: 260px;
+  }
+
+  .header-left {
+    position: static;
+    transform: scale(1);
+  }
+
+  .logo-principal {
+    height: 70px;
+  }
+
+
+  body > * {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    margin-top: -150px;
+    z-index: 10;
+  }
+
+  .header-right {
+    position: static;
+    margin: 5px 0;
+  }
+
+  .logo-principal {
+    height: 70px;
+  }
+
+  .logo-secundario {
+    height: 30px;
+  }
+
+
+  h1 {
+    font-size: 22px;
+  }
+
+  h2 {
+    font-size: 16px;
+  }
+
+  .topbar {
+    width: 100%;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding-bottom: 10px;
+  }
+
+  .topbar button {
+    min-width: 100px;
+    font-size: 12px;
+  }
+
+  .cards-top {
+    flex-direction: column;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  input {
+    width: 40px;
+  }
+
+  .equipo-titulo {
+    font-size: 14px;
+  }
+}
+
+
