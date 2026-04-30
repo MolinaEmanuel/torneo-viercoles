@@ -353,7 +353,7 @@ const isAdmin = window.admin === true;
 }
 
 /* MODAL */
-function abrirJugador(j, index, equipo){
+window.abrirJugador = function(j, index, equipo){
   const modal = document.createElement("div");
   modal.className = "modal-jugador activo";
 
