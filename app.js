@@ -197,6 +197,26 @@ window.eliminarJugador = function(equipo, index) {
   document.querySelector(".modal-jugador")?.remove();
 };
 
+window.guardarEdicionJugador = function(equipo, index) {
+
+  const nombre = document.getElementById("editNombre").value;
+  const altura = document.getElementById("editAltura").value;
+  const nacimiento = document.getElementById("editNacimiento").value;
+  const foto = document.getElementById("editFoto").value;
+
+  planteles[equipo][index] = {
+    nombre,
+    altura,
+    nacimiento,
+    foto
+  };
+
+  guardar();
+  renderPlanteles();
+
+  document.querySelector(".modal-jugador")?.remove();
+};
+
 /* 🔥 SOLUCIÓN REAL */
 function toggleEquipo(eq) {
   const el = document.getElementById("lista" + eq);
