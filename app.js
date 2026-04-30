@@ -349,8 +349,8 @@ function renderPlanteles() {
   }
 
   // LISTAS
-  listaA.innerHTML = (planteles.A || []).map(j => `
-    <div class="card jugador-card" onclick='abrirJugador(${JSON.stringify(j)})'>
+  listaA.innerHTML = (planteles.A || []).map((j, i) => `
+    <div class="card jugador-card" onclick='abrirJugador(${JSON.stringify(j)}, ${i}, "A")'>
       <img src="${j.foto || 'https://via.placeholder.com/100'}">
       <div>
         <strong>${j.nombre}</strong>
@@ -359,8 +359,8 @@ function renderPlanteles() {
     </div>
   `).join("");
 
-  listaB.innerHTML = (planteles.B || []).map(j => `
-    <div class="card jugador-card" onclick='abrirJugador(${JSON.stringify(j)})'>
+  listaB.innerHTML = (planteles.B || []).map((j, i) => `
+    <div class="card jugador-card" onclick='abrirJugador(${JSON.stringify(j)}, ${i}, "B")'>
       <img src="${j.foto || 'https://via.placeholder.com/100'}">
       <div>
         <strong>${j.nombre}</strong>
@@ -395,19 +395,57 @@ window.setFotoEquipo = (eq) => {
   guardar();
 };
 
+window.guardarEdicionJugador = (equipo, index) => {
+
+  const nombre = document.getElementById("editNombre").value;
+  const altura = document.getElementById("editAltura").value;
+  const nacimiento = document.getElementById("editNacimiento").value;
+  const foto = document.getElementById("editFoto").value;
+
+  planteles[equipo][index] = {
+    nombre,
+    altura,
+    nacimiento,
+    foto
+  };
+
+  guardar();
+
+  document.querySelector(".modal-jugador").remove();
+};
+
 /* MODAL JUGADOR */
-function abrirJugador(j){
+function abrirJugador(j, index, equipo){
+
   const modal = document.createElement("div");
   modal.className = "modal-jugador activo";
 
   modal.innerHTML = `
     <div class="overlay" onclick="this.parentElement.remove()"></div>
+
     <div class="card-jugador">
       <img src="${j.foto || 'https://via.placeholder.com/200'}">
-      <h2>${j.nombre}</h2>
-      <p>Altura: ${j.altura}</p>
-      <p>Nacimiento: ${j.nacimiento || '-'}</p>
-      <button onclick="this.parentElement.parentElement.remove()">Cerrar</button>
+
+      ${
+        admin
+        ? `
+          <input id="editNombre" value="${j.nombre}" placeholder="Nombre">
+          <input id="editAltura" value="${j.altura}" placeholder="Altura">
+          <input id="editNacimiento" value="${j.nacimiento || ''}" placeholder="Nacimiento">
+          <input id="editFoto" value="${j.foto}" placeholder="Ruta foto">
+        `
+        : `
+          <h2>${j.nombre}</h2>
+          <p>Altura: ${j.altura}</p>
+          <p>Nacimiento: ${j.nacimiento || '-'}</p>
+        `
+      }
+
+      ${
+        admin
+        ? `<button onclick="guardarEdicionJugador('${equipo}', ${index})">Guardar</button>`
+        : `<button onclick="this.parentElement.parentElement.remove()">Cerrar</button>`
+      }
     </div>
   `;
 
