@@ -105,7 +105,12 @@ window.verificarLogin = () => {
     window.admin = true;
     localStorage.setItem("admin","true");
     modalLogin.style.display="none";
-    renderAll();
+
+    renderAll(); // OK
+
+    // 🔥 AGREGAR ESTO
+    document.querySelector(".modal-jugador")?.remove();
+
   } else alert("Incorrecto");
 };
 
@@ -339,10 +344,12 @@ function renderPlanteles() {
     </div>
   `).join("");
 
-  document.getElementById("btnA").style.display = window.admin ? "inline-block" : "none";
-  document.getElementById("btnB").style.display = window.admin ? "inline-block" : "none";
-  document.getElementById("fotoA").style.display = window.admin ? "inline-block" : "none";
-  document.getElementById("fotoB").style.display = window.admin ? "inline-block" : "none";
+const isAdmin = window.admin === true;
+
+  document.getElementById("btnA").style.display = isAdmin ? "inline-block" : "none";
+  document.getElementById("btnB").style.display = isAdmin ? "inline-block" : "none";
+  document.getElementById("fotoA").style.display = isAdmin ? "inline-block" : "none";
+  document.getElementById("fotoB").style.display = isAdmin ? "inline-block" : "none";
 }
 
 /* MODAL */
