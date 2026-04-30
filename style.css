@@ -350,6 +350,10 @@ input {
   z-index: 9999;
 }
 
+.modal-jugador.activo {
+  display: block;
+}
+
 .modal-jugador .overlay {
   position: absolute;
   width: 100%;
