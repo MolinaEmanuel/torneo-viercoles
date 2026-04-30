@@ -381,9 +381,9 @@ window.abrirJugador = function(j, index, equipo){
   modal.className = "modal-jugador activo";
 
   modal.innerHTML = `
-    <div class="overlay" onclick="this.parentElement.remove()"></div>
+    <div class="overlay"></div>
 
-    <div class="card-jugador">
+    <div class="card-jugador" onclick="event.stopPropagation()">
       <img src="${j.foto || 'https://via.placeholder.com/200'}">
 
       ${
@@ -401,11 +401,16 @@ window.abrirJugador = function(j, index, equipo){
           <h2>${j.nombre}</h2>
           <p>Altura: ${j.altura}</p>
           <p>Nacimiento: ${j.nacimiento}</p>
-          <button onclick="this.parentElement.parentElement.remove()">Cerrar</button>
+          <button onclick="document.querySelector('.modal-jugador')?.remove()">Cerrar</button>
         `
       }
     </div>
   `;
+
+  // cerrar modal al hacer click afuera
+  modal.addEventListener("click", () => {
+    modal.remove();
+  });
 
   document.body.appendChild(modal);
 };

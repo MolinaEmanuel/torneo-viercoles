@@ -719,3 +719,14 @@ input {
   transform: translateY(-3px) scale(1.01);
   transition: 0.3s;
 }
+
+/* 🔥 FIX FINAL BOTONES MODAL */
+
+.modal-jugador .overlay {
+  z-index: 1;
+}
+
+.card-jugador {
+  position: relative;
+  z-index: 2;
+}
