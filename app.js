@@ -290,24 +290,49 @@ function renderInfo(){
 function renderHistorial() {
   historialContenido.innerHTML = datos.map((p, i) => `
     <div class="fila">
-      Fecha ${i+1} - ${p.fecha} <br>
+      <strong>Fecha ${i+1} - ${p.fecha}</strong><br>
       ${p.golesA!=null ? `${p.golesA}-${p.golesB}` : "Sin jugar"} <br>
-      MVP: ${jugadores[i] || "-"}
+
+      MVP: ${
+        admin
+        ? `
+          <input 
+            type="text" 
+            value="${jugadores[i] || ''}" 
+            onchange="editarMVP(${i}, this.value)"
+            placeholder="Nombre jugador"
+          >
+        `
+        : `<b>${jugadores[i] || "-"}</b>`
+      }
     </div>
   `).join("");
 }
 
+window.editarMVP = (index, nombre) => {
+  jugadores[index] = nombre;
+  guardar();
+};
+
 function renderRanking(){
-  let count={};
+
+  let count = {};
 
   jugadores.forEach(j=>{
     if(!j) return;
-    count[j]=(count[j]||0)+1;
+    count[j] = (count[j] || 0) + 1;
   });
 
-  rankingContenido.innerHTML = Object.entries(count)
-    .map(([n,c])=>`<div class="fila">${n} - ${c}</div>`)
-    .join("");
+  // 🔥 PASAR A ARRAY Y ORDENAR
+  let ranking = Object.entries(count)
+    .map(([nombre, puntos]) => ({ nombre, puntos }))
+    .sort((a,b) => b.puntos - a.puntos);
+
+  rankingContenido.innerHTML = ranking.map((j,i)=>`
+    <div class="fila ${i===0 ? 'lider' : ''}">
+      ${i+1}. ${j.nombre} - ${j.puntos} MVP
+    </div>
+  `).join("");
 }
 
 function renderPlanteles() {
