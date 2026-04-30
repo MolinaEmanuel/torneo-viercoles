@@ -325,7 +325,7 @@ function renderRanking(){
 function renderPlanteles() {
 
   listaA.innerHTML = (planteles.A || []).map((j, i) => `
-    <div class="card jugador-card" onclick="abrirJugadorIndex('A', ${i})">
+    <div class="card jugador-card" data-equipo="A" data-index="${i}">
       <img src="${j.foto || 'https://via.placeholder.com/100'}">
       <div>
         <strong>${j.nombre}</strong>
@@ -335,7 +335,7 @@ function renderPlanteles() {
   `).join("");
 
   listaB.innerHTML = (planteles.B || []).map((j, i) => `
-    <div class="card jugador-card" onclick="abrirJugadorIndex('B', ${i})">
+    <div class="card jugador-card" data-equipo="B" data-index="${i}">
       <img src="${j.foto || 'https://via.placeholder.com/100'}">
       <div>
         <strong>${j.nombre}</strong>
@@ -344,16 +344,28 @@ function renderPlanteles() {
     </div>
   `).join("");
 
-const isAdmin = window.admin === true;
+  const isAdmin = window.admin === true;
 
   document.getElementById("btnA").style.display = isAdmin ? "inline-block" : "none";
   document.getElementById("btnB").style.display = isAdmin ? "inline-block" : "none";
   document.getElementById("fotoA").style.display = isAdmin ? "inline-block" : "none";
   document.getElementById("fotoB").style.display = isAdmin ? "inline-block" : "none";
+
+  // 🔥 EVENTOS CLICK (REEMPLAZA onclick HTML)
+  document.querySelectorAll(".jugador-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const equipo = card.dataset.equipo;
+      const index = parseInt(card.dataset.index);
+      abrirJugadorIndex(equipo, index);
+    });
+  });
 }
 
 /* MODAL */
 window.abrirJugador = function(j, index, equipo){
+
+  const isAdmin = window.admin === true;
+
   const modal = document.createElement("div");
   modal.className = "modal-jugador activo";
 
@@ -364,12 +376,13 @@ window.abrirJugador = function(j, index, equipo){
       <img src="${j.foto || 'https://via.placeholder.com/200'}">
 
       ${
-        window.admin
+        isAdmin
         ? `
           <input id="editNombre" value="${j.nombre}">
           <input id="editAltura" value="${j.altura}">
           <input id="editNacimiento" value="${j.nacimiento}">
           <input id="editFoto" value="${j.foto}">
+
           <button onclick="guardarEdicionJugador('${equipo}', ${index})">Guardar</button>
           <button onclick="eliminarJugador('${equipo}', ${index})">Eliminar</button>
         `
@@ -384,7 +397,7 @@ window.abrirJugador = function(j, index, equipo){
   `;
 
   document.body.appendChild(modal);
-}
+};
 
 window.abrirJugadorIndex = (equipo, index) => {
   abrirJugador(planteles[equipo][index], index, equipo);
