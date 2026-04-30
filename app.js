@@ -350,15 +350,6 @@ function renderPlanteles() {
   document.getElementById("btnB").style.display = isAdmin ? "inline-block" : "none";
   document.getElementById("fotoA").style.display = isAdmin ? "inline-block" : "none";
   document.getElementById("fotoB").style.display = isAdmin ? "inline-block" : "none";
-
-  // 🔥 EVENTOS CLICK (REEMPLAZA onclick HTML)
-  document.querySelectorAll(".jugador-card").forEach(card => {
-    card.addEventListener("click", () => {
-      const equipo = card.dataset.equipo;
-      const index = parseInt(card.dataset.index);
-      abrirJugadorIndex(equipo, index);
-    });
-  });
 }
 
 /* MODAL */
@@ -402,6 +393,19 @@ window.abrirJugador = function(j, index, equipo){
 window.abrirJugadorIndex = (equipo, index) => {
   abrirJugador(planteles[equipo][index], index, equipo);
 };
+
+document.addEventListener("click", function(e){
+
+  const card = e.target.closest(".jugador-card");
+
+  if(card){
+    const equipo = card.dataset.equipo;
+    const index = parseInt(card.dataset.index);
+
+    abrirJugadorIndex(equipo, index);
+  }
+
+});
 
 /* INIT */
 cargarDatos();
