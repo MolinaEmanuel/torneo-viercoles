@@ -221,11 +221,11 @@ input {
 /* ESTADO OCULTO */
 .seccion {
   opacity: 0;
-  transform: translateY(20px) scale(0.98);
+  transform: translateY(30px) scale(0.96);
   pointer-events: none;
   position: absolute;
   width: 100%;
-  transition: all 0.35s ease;
+  transition: all 0.6s ease; /* 🔥 más lenta */
 }
 
 .seccion.activa {
@@ -237,7 +237,7 @@ input {
 
 .seccion.saliendo {
   opacity: 0;
-  transform: translateY(-20px) scale(0.98);
+  transform: translateY(-30px) scale(0.96);
 }
 
 /* ANIMACIÓN SUAVE GLOBAL */
@@ -327,6 +327,181 @@ input {
 .fila input {
   margin-top: 5px;
   width: 120px;
+}
+
+.foto-equipo {
+  width: 100%;
+  border-radius: 14px;
+  margin: 12px 0;
+  transition: transform 0.4s ease;
+}
+
+.foto-equipo:hover {
+  transform: scale(1.02);
+}
+
+.modal-jugador {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  z-index: 9999;
+}
+
+.modal-jugador .overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(2,6,23,0.85);
+  backdrop-filter: blur(8px);
+}
+
+/* CARD */
+.card-jugador {
+  position: relative;
+  margin: auto;
+  top: 50%;
+  transform: translateY(-50%) scale(0.9);
+  background: linear-gradient(145deg, #0f172a, #1e293b);
+  border-radius: 18px;
+  padding: 20px;
+  width: 280px;
+  text-align: center;
+  color: white;
+  opacity: 0;
+  transition: all 0.4s ease;
+}
+
+.modal-jugador.activo .card-jugador {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+.card-jugador img {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.card-jugador h2 {
+  margin: 5px 0;
+}
+
+.card-jugador p {
+  opacity: 0.8;
+}
+
+.card-jugador button {
+  margin-top: 10px;
+  background: #ef4444;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+.jugador {
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.jugador:hover {
+  background: rgba(239,68,68,0.2);
+  transform: translateX(5px);
+}
+
+.jugador-card {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  transition: 0.3s;
+}
+
+.jugador-card:hover {
+  transform: scale(1.03);
+}
+
+.jugador-card img {
+  width: 70px;
+  height: 70px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+/* 🎮 MEJORA VISUAL FIFA CARDS */
+
+.jugador-card {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  transition: 0.3s;
+  cursor: pointer;
+  background: linear-gradient(145deg, #0f172a, #1e293b);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.jugador-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(239,68,68,0.25);
+}
+
+/* FOTO MÁS PRO */
+.jugador-card img {
+  width: 70px;
+  height: 70px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2px solid rgba(239,68,68,0.4);
+}
+
+/* MODAL MÁS PRO */
+.card-jugador {
+  position: relative;
+  margin: auto;
+  top: 50%;
+  transform: translateY(-50%) scale(0.9);
+  background: linear-gradient(145deg, #020617, #1e293b);
+  border-radius: 20px;
+  padding: 25px;
+  width: 300px;
+  text-align: center;
+  color: white;
+  opacity: 0;
+  transition: all 0.4s ease;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.card-jugador img {
+  width: 100%;
+  border-radius: 14px;
+  margin-bottom: 15px;
+  border: 3px solid rgba(239,68,68,0.5);
+}
+
+.card-jugador h2 {
+  margin: 10px 0;
+  color: #ef4444;
+}
+
+.card-jugador p {
+  opacity: 0.9;
+  margin: 5px 0;
+}
+
+/* FOTO EQUIPO MÁS PRO */
+.foto-equipo {
+  width: 100%;
+  border-radius: 16px;
+  margin: 12px 0;
+  transition: transform 0.4s ease;
+  border: 2px solid rgba(255,255,255,0.08);
+}
+
+.foto-equipo:hover {
+  transform: scale(1.03);
 }
 
 /* 🎬 VIDEO BANNER PRO */
