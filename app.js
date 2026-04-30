@@ -198,13 +198,15 @@ window.agregarJugador = (equipo) => {
   renderPlanteles(); // 🔥 clave
 };
 
-window.eliminarJugador = (equipo, index) => {
+window.eliminarJugador = function(equipo, index) {
 
   if(!confirm("Eliminar jugador?")) return;
 
   planteles[equipo].splice(index, 1);
   guardar();
-  renderPlanteles(); // 🔥 esto faltaba
+  renderPlanteles();
+
+  document.querySelector(".modal-jugador")?.remove();
 };
 
 /* RENDER */
@@ -411,7 +413,7 @@ window.setFotoEquipo = (eq) => {
   guardar();
 };
 
-window.guardarEdicionJugador = (equipo, index) => {
+window.guardarEdicionJugador = function(equipo, index) {
 
   const nombre = document.getElementById("editNombre").value;
   const altura = document.getElementById("editAltura").value;
@@ -426,7 +428,7 @@ window.guardarEdicionJugador = (equipo, index) => {
   };
 
   guardar();
-  renderPlanteles(); // 🔥 clave visual
+  renderPlanteles();
 
   document.querySelector(".modal-jugador").remove();
 };
