@@ -60,17 +60,23 @@ function cargarDatos(){
       datos = data.partidos || generarFechas();
       jugadores = data.jugadores || new Array(datos.length).fill("");
 
-      // 🔥 NORMALIZACIÓN CLAVE
+      // 🔥 NORMALIZACIÓN CORRECTA (INCLUYE NACIMIENTO)
       planteles = data.planteles || { A: [], B: [] };
 
       ["A","B"].forEach(eq=>{
         planteles[eq] = (planteles[eq] || []).map(j=>{
           if(typeof j === "string"){
-            return { nombre:j, altura:"-", foto:"" };
+            return { 
+              nombre: j, 
+              altura: "-", 
+              nacimiento: "-", 
+              foto: "" 
+            };
           }
           return {
             nombre: j?.nombre || "-",
             altura: j?.altura || "-",
+            nacimiento: j?.nacimiento || "-",
             foto: j?.foto || ""
           };
         });
@@ -198,6 +204,7 @@ window.eliminarJugador = (equipo, index) => {
 
   planteles[equipo].splice(index, 1);
   guardar();
+  renderPlanteles(); // 🔥 esto faltaba
 };
 
 /* RENDER */
@@ -419,6 +426,7 @@ window.guardarEdicionJugador = (equipo, index) => {
   };
 
   guardar();
+  renderPlanteles(); // 🔥 clave visual
 
   document.querySelector(".modal-jugador").remove();
 };
