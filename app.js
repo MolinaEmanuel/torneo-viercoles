@@ -189,6 +189,15 @@ window.agregarJugador = (equipo) => {
   });
 
   guardar();
+  renderPlanteles(); // 🔥 clave
+};
+
+window.eliminarJugador = (equipo, index) => {
+
+  if(!confirm("Eliminar jugador?")) return;
+
+  planteles[equipo].splice(index, 1);
+  guardar();
 };
 
 /* RENDER */
@@ -350,7 +359,7 @@ function renderPlanteles() {
 
   // LISTAS
   listaA.innerHTML = (planteles.A || []).map((j, i) => `
-    <div class="card jugador-card" onclick='abrirJugador(${JSON.stringify(j)}, ${i}, "A")'>
+    <div class="card jugador-card" onclick="abrirJugadorIndex('A', ${i})">
       <img src="${j.foto || 'https://via.placeholder.com/100'}">
       <div>
         <strong>${j.nombre}</strong>
@@ -360,7 +369,7 @@ function renderPlanteles() {
   `).join("");
 
   listaB.innerHTML = (planteles.B || []).map((j, i) => `
-    <div class="card jugador-card" onclick='abrirJugador(${JSON.stringify(j)}, ${i}, "B")'>
+    <div class="card jugador-card" onclick="abrirJugadorIndex('B', ${i})">
       <img src="${j.foto || 'https://via.placeholder.com/100'}">
       <div>
         <strong>${j.nombre}</strong>
@@ -443,7 +452,10 @@ function abrirJugador(j, index, equipo){
 
       ${
         admin
-        ? `<button onclick="guardarEdicionJugador('${equipo}', ${index})">Guardar</button>`
+        ? `
+          <button onclick="guardarEdicionJugador('${equipo}', ${index})">Guardar</button>
+          <button onclick="eliminarJugador('${equipo}', ${index})">Eliminar</button>
+        `
         : `<button onclick="this.parentElement.parentElement.remove()">Cerrar</button>`
       }
     </div>
@@ -451,6 +463,11 @@ function abrirJugador(j, index, equipo){
 
   document.body.appendChild(modal);
 }
+
+window.abrirJugadorIndex = (equipo, index) => {
+  const j = planteles[equipo][index];
+  abrirJugador(j, index, equipo);
+};
 
 
 /* INIT */
