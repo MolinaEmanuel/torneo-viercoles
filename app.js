@@ -440,7 +440,7 @@ function abrirJugador(j, index, equipo){
   modal.className = "modal-jugador activo";
 
   modal.innerHTML = `
-    <div class="overlay" onclick="this.parentElement.remove()"></div>
+    <div class="overlay"></div>
 
     <div class="card-jugador">
       <img src="${j.foto || 'https://via.placeholder.com/200'}">
@@ -460,18 +460,38 @@ function abrirJugador(j, index, equipo){
         `
       }
 
-      ${
-        admin
-        ? `
-          <button onclick="guardarEdicionJugador('${equipo}', ${index})">Guardar</button>
-          <button onclick="eliminarJugador('${equipo}', ${index})">Eliminar</button>
-        `
-        : `<button onclick="this.parentElement.parentElement.remove()">Cerrar</button>`
-      }
+      <div class="acciones"></div>
     </div>
   `;
 
   document.body.appendChild(modal);
+
+  // 🔥 CERRAR
+  modal.querySelector(".overlay").onclick = () => modal.remove();
+
+  const acciones = modal.querySelector(".acciones");
+
+  if(admin){
+
+    const btnGuardar = document.createElement("button");
+    btnGuardar.textContent = "Guardar";
+    btnGuardar.onclick = () => guardarEdicionJugador(equipo, index);
+
+    const btnEliminar = document.createElement("button");
+    btnEliminar.textContent = "Eliminar";
+    btnEliminar.onclick = () => eliminarJugador(equipo, index);
+
+    acciones.appendChild(btnGuardar);
+    acciones.appendChild(btnEliminar);
+
+  } else {
+
+    const btnCerrar = document.createElement("button");
+    btnCerrar.textContent = "Cerrar";
+    btnCerrar.onclick = () => modal.remove();
+
+    acciones.appendChild(btnCerrar);
+  }
 }
 
 window.abrirJugadorIndex = (equipo, index) => {
