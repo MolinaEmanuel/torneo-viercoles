@@ -1,145 +1,148 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Futbol Viércoles</title>
-<link rel="stylesheet" href="style.css">
-<link rel="icon" href="assets/images//logo/isologo FV.png" type="image/png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Torneo Apertura 2026 - Fútbol Miércoles">
+  <title>Futbol Viércoles</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="assets/images/logo/isologo FV.png" type="image/png">
 </head>
 
 <body>
 
-<div id="loader" class="loader">
-  <div class="spinner"></div>
-</div>
-
-<div class="video-banner">
-  <video autoplay muted loop playsinline>
-    <source src="assets/video/video web.mp4" type="video/mp4">
-  </video>
-</div>
-
-<div class="header">
-
-  <div class="header-left">
-    <img src="assets/images//logo/logo futbol viercoles.png" alt="logo futbol viercoles" class="logo-principal">
+  <!-- LOADER -->
+  <div id="loader" class="loader" aria-label="Cargando...">
+    <div class="spinner"></div>
   </div>
 
-  <div class="header-center">
-    <h1>Torneo Apertura 2026</h1>
-    <h2>Julio "Messi" Gimenez</h2>
+  <!-- VIDEO BANNER -->
+  <div class="video-banner" aria-hidden="true">
+    <video autoplay muted loop playsinline preload="none">
+      <source src="assets/video/video web.mp4" type="video/mp4">
+    </video>
   </div>
 
-  <div class="header-right">
-    <img src="assets/images//logo/logo conmebol.png" alt="logo conmebol" class="logo-secundario">
-  </div>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <img src="assets/images/logo/logo futbol viercoles.png" alt="Logo Fútbol Viércoles" class="logo-principal">
+    </div>
+    <div class="header-center">
+      <h1>Torneo Apertura 2026</h1>
+      <h2>Julio "Messi" Gimenez</h2>
+    </div>
+    <div class="header-right">
+      <img src="assets/images/logo/logo conmebol.png" alt="Logo CONMEBOL" class="logo-secundario">
+    </div>
+  </header>
 
-</div>
+  <!-- NAVBAR -->
+  <nav class="topbar" role="navigation" aria-label="Menú principal">
+    <button onclick="mostrarSeccion('inicio')" class="nav-btn active-nav" data-section="inicio">Inicio</button>
+    <button onclick="mostrarSeccion('plantel')" class="nav-btn" data-section="plantel">Plantel</button>
+    <button onclick="mostrarSeccion('historial')" class="nav-btn" data-section="historial">Historial</button>
+    <button onclick="mostrarSeccion('ranking')" class="nav-btn" data-section="ranking">Ranking MVP</button>
+    <button onclick="abrirLogin()" class="nav-btn btn-admin" id="btnAdminLogin">Modo Admin</button>
+    <button onclick="logout()" class="nav-btn btn-logout" id="btnAdminLogout" style="display:none">Salir Admin</button>
+  </nav>
 
-<!-- NAVBAR -->
-<div class="topbar">
-  <button onclick="mostrarSeccion('inicio')">Inicio</button>
-  <button onclick="mostrarSeccion('plantel')">Plantel</button>
-  <button onclick="mostrarSeccion('historial')">Historial</button>
-  <button onclick="mostrarSeccion('ranking')">Ranking MVP</button>
-  <button onclick="abrirLogin()">Modo Admin</button>
-  <button onclick="logout()">Salir Admin</button>
-</div>
-
-<!-- LOGIN -->
-<div id="modalLogin" class="modal">
-  <div class="modal-content">
-    <h3>Ingreso admin</h3>
-    <input type="password" id="passwordInput">
-    <button onclick="verificarLogin()">Ingresar</button>
-  </div>
-</div>
-
-<!-- INICIO -->
-<div id="inicio" class="seccion activa">
-
-<div class="cards-top">
-  <div class="card highlight">
-    <h3>Fecha actual</h3>
-    <div id="fechaActual"></div>
-  </div>
-
-  <div class="card highlight">
-    <h3>Jugador de la fecha</h3>
-    <div id="jugadorTexto"></div>
-
-    <div id="adminJugador" style="display:none;">
-      <input type="text" id="inputJugador">
-      <button onclick="guardarJugador()">Guardar</button>
+  <!-- LOGIN MODAL -->
+  <div id="modalLogin" class="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <div class="modal-content">
+      <h3 id="loginTitle">Ingreso Admin</h3>
+      <input type="password" id="passwordInput" placeholder="Contraseña" autocomplete="current-password">
+      <div class="modal-actions">
+        <button onclick="verificarLogin()">Ingresar</button>
+        <button class="btn-secondary" onclick="document.getElementById('modalLogin').style.display='none'">Cancelar</button>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="card">
-  <h2>Tabla de posiciones</h2>
-  <div id="tabla"></div>
-</div>
+  <!-- SECCIÓN: INICIO -->
+  <main>
+    <section id="inicio" class="seccion activa">
 
-<div class="card">
-  <h2>Partidos</h2>
-  <table id="partidos"></table>
-</div>
-
-</div>
-
-
-<div id="plantel" class="seccion" style="display:none;">
-  <div class="card">
-    <h2>Planteles</h2>
-
-    <div class="equipo">
-      <div class="equipo-titulo" onclick="toggleEquipo('A')">
-        Equipo SEBA
+      <div class="cards-top">
+        <div class="card highlight">
+          <h3>Fecha actual</h3>
+          <div id="fechaActual" class="stat-value">-</div>
+        </div>
+        <div class="card highlight">
+          <h3>Jugador de la fecha</h3>
+          <div id="jugadorTexto" class="stat-value">-</div>
+          <div id="adminJugador" style="display:none;" class="admin-inline">
+            <input type="text" id="inputJugador" placeholder="Nombre del MVP">
+            <button onclick="guardarJugador()">Guardar</button>
+          </div>
+        </div>
       </div>
 
-      <div style="text-align:center; margin-top:10px;">
-        <button onclick="agregarJugador('A')" id="btnA">Agregar jugador</button>
-        <button onclick="setFotoEquipo('A')" id="fotoA">Foto equipo</button>
+      <div class="card">
+        <h2>Tabla de posiciones</h2>
+        <div id="tabla"></div>
       </div>
 
-      <img id="imgEquipoA" class="foto-equipo" style="display:none;">
-      <div id="listaA" class="equipo-lista"></div>
-    </div>
-
-    <div class="equipo">
-      <div class="equipo-titulo" onclick="toggleEquipo('B')">
-        Equipo HEBER
+      <div class="card">
+        <h2>Partidos</h2>
+        <div class="table-wrapper">
+          <table id="partidos"></table>
+        </div>
       </div>
 
-      <div style="text-align:center; margin-top:10px;">
-        <button onclick="agregarJugador('B')" id="btnB">Agregar jugador</button>
-        <button onclick="setFotoEquipo('B')" id="fotoB">Foto equipo</button>
+    </section>
+
+    <!-- SECCIÓN: PLANTEL -->
+    <section id="plantel" class="seccion">
+      <div class="card">
+        <h2>Planteles</h2>
+
+        <div class="equipo">
+          <div class="equipo-titulo" onclick="toggleEquipo('A')" role="button" tabindex="0" aria-expanded="false" id="titleA">
+            <span>Equipo SEBA</span>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="equipo-admin" id="adminA" style="display:none;">
+            <button onclick="agregarJugador('A')" id="btnA">+ Agregar jugador</button>
+            <button onclick="setFotoEquipo('A')" id="fotoA">📷 Foto equipo</button>
+          </div>
+          <img id="imgEquipoA" class="foto-equipo" style="display:none;" alt="Foto Equipo A">
+          <div id="listaA" class="equipo-lista"></div>
+        </div>
+
+        <div class="equipo">
+          <div class="equipo-titulo" onclick="toggleEquipo('B')" role="button" tabindex="0" aria-expanded="false" id="titleB">
+            <span>Equipo HEBER</span>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="equipo-admin" id="adminB" style="display:none;">
+            <button onclick="agregarJugador('B')" id="btnB">+ Agregar jugador</button>
+            <button onclick="setFotoEquipo('B')" id="fotoB">📷 Foto equipo</button>
+          </div>
+          <img id="imgEquipoB" class="foto-equipo" style="display:none;" alt="Foto Equipo B">
+          <div id="listaB" class="equipo-lista"></div>
+        </div>
       </div>
+    </section>
 
-      <img id="imgEquipoB" class="foto-equipo" style="display:none;">
-      <div id="listaB" class="equipo-lista"></div>
-    </div>
+    <!-- SECCIÓN: HISTORIAL -->
+    <section id="historial" class="seccion">
+      <div class="card">
+        <h2>Historial</h2>
+        <div id="historialContenido"></div>
+      </div>
+    </section>
 
-  </div>
-</div>
+    <!-- SECCIÓN: RANKING -->
+    <section id="ranking" class="seccion">
+      <div class="card">
+        <h2>Ranking MVP</h2>
+        <div id="rankingContenido"></div>
+      </div>
+    </section>
+  </main>
 
-<div id="historial" class="seccion" style="display:none;">
-  <div class="card">
-    <h2>Historial</h2>
-    <div id="historialContenido"></div>
-  </div>
-</div>
-
-<!-- RANKING -->
-<div id="ranking" class="seccion" style="display:none;">
-  <div class="card">
-    <h2>Ranking MVP</h2>
-    <div id="rankingContenido"></div>
-  </div>
-</div>
-
-<script type="module" src="app.js"></script>
+  <script type="module" src="app.js"></script>
 
 </body>
 </html>
