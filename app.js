@@ -535,7 +535,7 @@ window.abrirJugador = (j, index, equipo, esCapitan = false) => {
             <div class="fcard-dorsal">${j.dorsal || ""}</div>
             <div class="fcard-escudo-box" id="fcEscudo"></div>
             <div class="fcard-photo-wrap" id="fcFoto"></div>
-            ${esCapitan ? `<div class="fcard-capitan-badge">🎖️ Capitán</div>` : ""}
+            ${esCapitan ? `<div class="fcard-capitan-badge">Capitán</div>` : ""}
             <div class="fcard-accent-bar ${esCapitan ? "capitan" : ""}"></div>
           </div>
           <div class="fcard-bottom">
@@ -814,8 +814,8 @@ function renderPartidos() {
   datos.forEach((p, i) => {
     let res = `<span style="color:var(--text-muted)">Sin jugar</span>`;
     if (p.golesA != null) {
-      if      (p.golesA > p.golesB) res = `🏆 ${EQUIPO_A} ${p.golesA}–${p.golesB}`;
-      else if (p.golesB > p.golesA) res = `🏆 ${EQUIPO_B} ${p.golesB}–${p.golesA}`;
+      if      (p.golesA > p.golesB) res = `${EQUIPO_A} ${p.golesA}–${p.golesB}`;
+      else if (p.golesB > p.golesA) res = `${EQUIPO_B} ${p.golesB}–${p.golesA}`;
       else                          res = `Empate ${p.golesA}–${p.golesB}`;
     }
     html += `
@@ -856,7 +856,7 @@ function renderTabla() {
   tablaEl.innerHTML = equipos.map((eq, i) => `
     <div class="fila ${i === 0 ? "lider" : ""}">
       <div class="fila-tabla">
-        <span class="fila-pos">${i === 0 ? "🥇" : "🥈"}</span>
+        <span class="fila-pos">${i === 0 ? "1°" : "2°"}</span>
         <span class="fila-nombre">${eq.nombre}</span>
         <span class="fila-pts">${eq.pts} pts</span>
         <span class="fila-gd">${eq.gd >= 0 ? "+" : ""}${eq.gd} GD</span>
@@ -921,7 +921,7 @@ function renderPlanteles() {
           <div style="flex:1">
             <strong>${j.nombre}</strong>
             ${esCapitan
-              ? `<div class="capitan-badge">🎖️ Capitán</div>`
+              ? `<div class="capitan-badge">Capitán</div>`
               : `<div>${j.altura !== "-" ? "📏 " + j.altura : ""}</div>`
             }
           </div>
