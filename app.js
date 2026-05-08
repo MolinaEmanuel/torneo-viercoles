@@ -172,30 +172,16 @@ window.guardarJugador = () => {
 };
 
 window.agregarJugador = (equipo) => {
-
   let nombre = prompt("Nombre completo");
   if (!nombre) return;
 
-  let dorsal = prompt("Dorsal") || "-";
   let altura = prompt("Altura (ej: 1.75)") || "-";
   let nacimiento = prompt("Fecha nacimiento (dd/mm/aaaa)") || "-";
-
-  let foto = prompt("Ruta foto jugador") || "";
-  let escudo = prompt("Ruta escudo equipo") || "";
-
-  let bandera = prompt("URL bandera país") || "https://flagcdn.com/w40/ar.png";
+  let foto = prompt("Ruta imagen (assets/images/...)") || "";
 
   if(!planteles[equipo]) planteles[equipo] = [];
 
-  planteles[equipo].push({
-    nombre,
-    dorsal,
-    altura,
-    nacimiento,
-    foto,
-    escudo,
-    bandera
-  });
+  planteles[equipo].push({ nombre, altura, nacimiento, foto });
 
   guardar();
   renderPlanteles();
@@ -359,63 +345,23 @@ function renderRanking(){
 function renderPlanteles() {
 
   listaA.innerHTML = (planteles.A || []).map((j, i) => `
-    
-    <div class="fifa-card jugador-card" data-equipo="A" data-index="${i}">
-
-      <div class="fifa-top">
-        <div class="fifa-dorsal">${j.dorsal || "-"}</div>
-
-        <div class="fifa-icons">
-          <img class="bandera" src="${j.bandera || 'https://flagcdn.com/w40/ar.png'}">
-          <img class="escudo" src="${j.escudo || ''}">
-        </div>
+    <div class="card jugador-card" data-equipo="A" data-index="${i}">
+      <img src="${j.foto || 'https://via.placeholder.com/100'}">
+      <div>
+        <strong>${j.nombre}</strong>
+        <div>${j.altura}</div>
       </div>
-
-      <div class="fifa-player-image">
-        <img src="${j.foto || 'https://via.placeholder.com/300'}">
-      </div>
-
-      <div class="fifa-bottom">
-        <div class="fifa-name">${j.nombre}</div>
-
-        <div class="fifa-info">
-          <span>${j.altura}</span>
-          <span>${j.nacimiento}</span>
-        </div>
-      </div>
-
     </div>
-
   `).join("");
 
   listaB.innerHTML = (planteles.B || []).map((j, i) => `
-    
-    <div class="fifa-card jugador-card" data-equipo="B" data-index="${i}">
-
-      <div class="fifa-top">
-        <div class="fifa-dorsal">${j.dorsal || "-"}</div>
-
-        <div class="fifa-icons">
-          <img class="bandera" src="${j.bandera || 'https://flagcdn.com/w40/ar.png'}">
-          <img class="escudo" src="${j.escudo || ''}">
-        </div>
+    <div class="card jugador-card" data-equipo="B" data-index="${i}">
+      <img src="${j.foto || 'https://via.placeholder.com/100'}">
+      <div>
+        <strong>${j.nombre}</strong>
+        <div>${j.altura}</div>
       </div>
-
-      <div class="fifa-player-image">
-        <img src="${j.foto || 'https://via.placeholder.com/300'}">
-      </div>
-
-      <div class="fifa-bottom">
-        <div class="fifa-name">${j.nombre}</div>
-
-        <div class="fifa-info">
-          <span>${j.altura}</span>
-          <span>${j.nacimiento}</span>
-        </div>
-      </div>
-
     </div>
-
   `).join("");
 
   const isAdmin = window.admin === true;
