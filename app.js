@@ -26,6 +26,17 @@ const ESCUDOS = {
   "Huracán":       "assets/images/escudos/huracan.png",
 };
 
+/* ── COLORES DOT POR CLUB ─────────────────────────── */
+// River usa clase CSS especial (degradado rojo/blanco diagonal)
+// El resto reciben color sólido inline
+const CLUB_COLORS = {
+  "Boca Juniors":  "#003087",
+  "Independiente": "#CC0000",
+  "Racing":        "#6BBFFF",
+  "San Lorenzo":   "#CC0000",
+  "Huracán":       "#e0e0e0",
+};
+
 /* ── DOM ──────────────────────────────────────────── */
 const $ = id => document.getElementById(id);
 const modalLogin        = $("modalLogin");
@@ -82,6 +93,16 @@ function updateAdminUI() {
   $("btnAdminLogout").style.display = isAdmin ? "inline-block" : "none";
 }
 
+/* ── DOT DE CLUB ──────────────────────────────────── */
+function clubDotHTML(escudo) {
+  if (!escudo) return "";
+  if (escudo === "River Plate") {
+    return `<span class="jugador-club-dot dot-river" title="River Plate"></span>`;
+  }
+  const color = CLUB_COLORS[escudo] || "rgba(255,255,255,0.3)";
+  return `<span class="jugador-club-dot" style="background:${color}" title="${escudo}"></span>`;
+}
+
 /* ── FIFA CARD STYLES ─────────────────────────────── */
 (function inyectarEstilosFIFA() {
   if (document.getElementById("fv-fifa-styles")) return;
@@ -114,6 +135,7 @@ function updateAdminUI() {
       z-index: 2;
     }
 
+    /* ── FLIP DE CARTA ── */
     .flip-scene {
       perspective: 1000px;
       width: 240px;
@@ -122,8 +144,18 @@ function updateAdminUI() {
     .flip-inner {
       position: relative;
       width: 100%;
+      -webkit-transform-style: preserve-3d;
       transform-style: preserve-3d;
+      will-change: transform;
+      -webkit-animation: cartaFlip 0.72s cubic-bezier(0.4, 0, 0.2, 1) 0.08s both;
       animation: cartaFlip 0.72s cubic-bezier(0.4, 0, 0.2, 1) 0.08s both;
+    }
+
+    @-webkit-keyframes cartaFlip {
+      0%   { -webkit-transform: rotateY(-180deg) scale(0.85); opacity: 0.5; }
+      60%  { -webkit-transform: rotateY(8deg)    scale(1.02); opacity: 1;   }
+      80%  { -webkit-transform: rotateY(-4deg)   scale(0.99);               }
+      100% { -webkit-transform: rotateY(0deg)    scale(1);                  }
     }
 
     @keyframes cartaFlip {
@@ -136,8 +168,9 @@ function updateAdminUI() {
     .flip-dorso {
       position: absolute;
       inset: 0;
-      backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      -webkit-transform: rotateY(180deg);
       transform: rotateY(180deg);
       background: linear-gradient(145deg, #0f172a, #1e293b);
       border-radius: 20px;
@@ -188,8 +221,8 @@ function updateAdminUI() {
     }
 
     .fifa-card {
-      backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
       width: 240px;
       border-radius: 20px;
       overflow: hidden;
@@ -205,8 +238,13 @@ function updateAdminUI() {
     .fcard-top {
       position: relative;
       height: 255px;
-      overflow: hidden;
+      /* SIN overflow:hidden durante la animación — evita el traba en iOS */
       background: linear-gradient(160deg, #0a0f1e 0%, #1a2540 50%, #0a0f1e 100%);
+    }
+
+    /* overflow se restaura una vez terminada la animación */
+    .flip-inner.animacion-completa .fcard-top {
+      overflow: hidden;
     }
 
     .fcard-lines {
@@ -407,13 +445,6 @@ function updateAdminUI() {
     }
     .fcard-admin .admin-btns button { flex: 1; font-size: 0.78rem; padding: 8px 6px; }
 
-    .jugador-club-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      margin-left: auto;
-    }
-
     @media (max-width: 480px) {
       .fifa-card-wrap {
         max-height: 90vh;
@@ -510,6 +541,12 @@ window.abrirJugador = (j, index, equipo) => {
   document.addEventListener("keydown", onKey);
 
   document.body.appendChild(modal);
+
+  // Agrega clase al terminar la animación para restaurar overflow en iOS
+  const flipInner = modal.querySelector(".flip-inner");
+  flipInner.addEventListener("animationend", () => {
+    flipInner.classList.add("animacion-completa");
+  }, { once: true });
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => modal.classList.add("activo"));
@@ -678,7 +715,6 @@ window.agregarJugador = (equipo) => {
   const nacimiento = prompt("Fecha de nacimiento (dd/mm/aaaa)") || "-";
   const escudo     = prompt("Club (ej: River Plate, Boca Juniors, Independiente...)") || "";
   const foto       = "";
-
   if (!planteles[equipo]) planteles[equipo] = [];
   planteles[equipo].push({ nombre, dorsal, altura, nacimiento, escudo, foto });
   guardar();
@@ -745,7 +781,6 @@ function renderPartidos() {
     </thead>
     <tbody>
   `;
-
   datos.forEach((p, i) => {
     let res = `<span style="color:var(--text-muted)">Sin jugar</span>`;
     if (p.golesA != null) {
@@ -753,7 +788,6 @@ function renderPartidos() {
       else if (p.golesB > p.golesA) res = `🏆 ${EQUIPO_B} ${p.golesB}–${p.golesA}`;
       else                          res = `Empate ${p.golesA}–${p.golesB}`;
     }
-
     html += `
       <tr>
         <td><strong>F${i+1}</strong></td>
@@ -768,7 +802,6 @@ function renderPartidos() {
       </tr>
     `;
   });
-
   html += "</tbody>";
   partidosEl.innerHTML = html;
 }
@@ -778,7 +811,6 @@ function renderTabla() {
     { nombre: EQUIPO_A, pts: 0, pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0 },
     { nombre: EQUIPO_B, pts: 0, pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0 },
   ];
-
   datos.forEach(p => {
     if (p.golesA == null) return;
     equipos[0].pj++; equipos[1].pj++;
@@ -788,7 +820,6 @@ function renderTabla() {
     else if (p.golesB > p.golesA) { equipos[1].pts += 3; equipos[1].pg++; equipos[0].pp++; }
     else                          { equipos[0].pts += 1; equipos[1].pts += 1; equipos[0].pe++; equipos[1].pe++; }
   });
-
   equipos.forEach(e => e.gd = e.gf - e.gc);
   equipos.sort((a, b) => b.pts !== a.pts ? b.pts - a.pts : b.gd - a.gd);
 
@@ -834,13 +865,10 @@ function renderHistorial() {
 function renderRanking() {
   const count = {};
   jugadores.forEach(j => { if (j) count[j] = (count[j] || 0) + 1; });
-
   const ranking = Object.entries(count)
     .map(([nombre, puntos]) => ({ nombre, puntos }))
     .sort((a, b) => b.puntos - a.puntos);
-
   const medals = ["🥇","🥈","🥉"];
-
   rankingEl.innerHTML = ranking.length
     ? ranking.map((j, i) => `
         <div class="fila ${i === 0 ? "lider" : ""}">
@@ -851,36 +879,21 @@ function renderRanking() {
     : `<p style="text-align:center;color:var(--text-muted)">Aún no hay MVPs registrados.</p>`;
 }
 
-/* ── COLORES DOT POR CLUB ─────────────────────────── */
-const CLUB_COLORS = {
-  "River Plate":   "#CC0000",
-  "Boca Juniors":  "#003087",
-  "Independiente": "#CC0000",
-  "Racing":        "#6BBFFF",
-  "San Lorenzo":   "#CC0000",
-  "Huracán":       "#FFFFFF",
-};
-
 function renderPlanteles() {
   const isAdmin = window.admin === true;
-
   ["A","B"].forEach(eq => {
     const lista = eq === "A" ? listaA : listaB;
-
-    lista.innerHTML = (planteles[eq] || []).map((j, i) => {
-      const dotColor = CLUB_COLORS[j.escudo] || "rgba(255,255,255,0.3)";
-      return `
-        <div class="card jugador-card" data-equipo="${eq}" data-index="${i}">
-          <img src="${avatarUrl(j.foto)}" alt="${j.nombre}" onerror="this.src='${avatarUrl('')}'">
-          <div style="flex:1">
-            <strong>${j.nombre}</strong>
-            <div>${j.altura !== "-" ? "📏 " + j.altura : ""}</div>
-          </div>
-          ${j.dorsal ? `<span style="font-size:13px;font-weight:700;color:var(--accent);margin-right:4px">#${j.dorsal}</span>` : ""}
-          <span class="jugador-club-dot" style="background:${dotColor}" title="${j.escudo || ""}"></span>
+    lista.innerHTML = (planteles[eq] || []).map((j, i) => `
+      <div class="card jugador-card" data-equipo="${eq}" data-index="${i}">
+        <img src="${avatarUrl(j.foto)}" alt="${j.nombre}" onerror="this.src='${avatarUrl('')}'">
+        <div style="flex:1">
+          <strong>${j.nombre}</strong>
+          <div>${j.altura !== "-" ? "📏 " + j.altura : ""}</div>
         </div>
-      `;
-    }).join("");
+        ${j.dorsal ? `<span style="font-size:13px;font-weight:700;color:var(--accent);margin-right:4px">#${j.dorsal}</span>` : ""}
+        ${clubDotHTML(j.escudo)}
+      </div>
+    `).join("");
 
     const adminDiv = $("admin" + eq);
     if (adminDiv) adminDiv.style.display = isAdmin ? "flex" : "none";
