@@ -27,10 +27,9 @@ const ESCUDOS = {
 };
 
 /* ── COLORES DOT POR CLUB ─────────────────────────── */
-// River usa clase CSS especial (degradado rojo/blanco diagonal)
+// River y Boca usan clases CSS con degradado diagonal
 // El resto reciben color sólido inline
 const CLUB_COLORS = {
-  "Boca Juniors":  "#003087",
   "Independiente": "#CC0000",
   "Racing":        "#6BBFFF",
   "San Lorenzo":   "#CC0000",
@@ -98,6 +97,9 @@ function clubDotHTML(escudo) {
   if (!escudo) return "";
   if (escudo === "River Plate") {
     return `<span class="jugador-club-dot dot-river" title="River Plate"></span>`;
+  }
+  if (escudo === "Boca Juniors") {
+    return `<span class="jugador-club-dot dot-boca" title="Boca Juniors"></span>`;
   }
   const color = CLUB_COLORS[escudo] || "rgba(255,255,255,0.3)";
   return `<span class="jugador-club-dot" style="background:${color}" title="${escudo}"></span>`;
@@ -238,11 +240,9 @@ function clubDotHTML(escudo) {
     .fcard-top {
       position: relative;
       height: 255px;
-      /* SIN overflow:hidden durante la animación — evita el traba en iOS */
       background: linear-gradient(160deg, #0a0f1e 0%, #1a2540 50%, #0a0f1e 100%);
     }
 
-    /* overflow se restaura una vez terminada la animación */
     .flip-inner.animacion-completa .fcard-top {
       overflow: hidden;
     }
@@ -277,6 +277,18 @@ function clubDotHTML(escudo) {
       );
     }
 
+    /* Barra dorada para capitán en la FIFA card */
+    .fcard-accent-bar.capitan {
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(245,158,11,0.4) 15%,
+        #f59e0b 50%,
+        rgba(245,158,11,0.4) 85%,
+        transparent 100%
+      );
+    }
+
     .fcard-dorsal {
       position: absolute;
       top: 12px; left: 14px;
@@ -287,6 +299,23 @@ function clubDotHTML(escudo) {
       line-height: 1;
       letter-spacing: -2px;
       text-shadow: 0 2px 16px rgba(239,68,68,0.35);
+    }
+
+    .fcard-capitan-badge {
+      position: absolute;
+      bottom: 12px; left: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(245,158,11,0.15);
+      border: 1px solid rgba(245,158,11,0.5);
+      border-radius: 6px;
+      padding: 3px 7px;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #f59e0b;
     }
 
     .fcard-escudo-box {
@@ -464,7 +493,7 @@ function siluetaSVG() {
   </svg>`;
 }
 
-window.abrirJugador = (j, index, equipo) => {
+window.abrirJugador = (j, index, equipo, esCapitan = false) => {
   document.querySelector(".modal-fifa")?.remove();
 
   const isAdmin    = window.admin === true;
@@ -506,7 +535,8 @@ window.abrirJugador = (j, index, equipo) => {
             <div class="fcard-dorsal">${j.dorsal || ""}</div>
             <div class="fcard-escudo-box" id="fcEscudo"></div>
             <div class="fcard-photo-wrap" id="fcFoto"></div>
-            <div class="fcard-accent-bar"></div>
+            ${esCapitan ? `<div class="fcard-capitan-badge">🎖️ Capitán</div>` : ""}
+            <div class="fcard-accent-bar ${esCapitan ? "capitan" : ""}"></div>
           </div>
           <div class="fcard-bottom">
             <div class="fcard-nombre-box">
@@ -542,7 +572,6 @@ window.abrirJugador = (j, index, equipo) => {
 
   document.body.appendChild(modal);
 
-  // Agrega clase al terminar la animación para restaurar overflow en iOS
   const flipInner = modal.querySelector(".flip-inner");
   flipInner.addEventListener("animationend", () => {
     flipInner.classList.add("animacion-completa");
@@ -580,7 +609,8 @@ window.abrirJugador = (j, index, equipo) => {
 };
 
 window.abrirJugadorIndex = (equipo, index) => {
-  abrirJugador(planteles[equipo][index], index, equipo);
+  const esCapitan = index === 0;
+  abrirJugador(planteles[equipo][index], index, equipo, esCapitan);
 };
 
 document.addEventListener("click", e => {
@@ -883,17 +913,23 @@ function renderPlanteles() {
   const isAdmin = window.admin === true;
   ["A","B"].forEach(eq => {
     const lista = eq === "A" ? listaA : listaB;
-    lista.innerHTML = (planteles[eq] || []).map((j, i) => `
-      <div class="card jugador-card" data-equipo="${eq}" data-index="${i}">
-        <img src="${avatarUrl(j.foto)}" alt="${j.nombre}" onerror="this.src='${avatarUrl('')}'">
-        <div style="flex:1">
-          <strong>${j.nombre}</strong>
-          <div>${j.altura !== "-" ? "📏 " + j.altura : ""}</div>
+    lista.innerHTML = (planteles[eq] || []).map((j, i) => {
+      const esCapitan = i === 0;
+      return `
+        <div class="card jugador-card${esCapitan ? " capitan" : ""}" data-equipo="${eq}" data-index="${i}">
+          <img src="${avatarUrl(j.foto)}" alt="${j.nombre}" onerror="this.src='${avatarUrl('')}'">
+          <div style="flex:1">
+            <strong>${j.nombre}</strong>
+            ${esCapitan
+              ? `<div class="capitan-badge">🎖️ Capitán</div>`
+              : `<div>${j.altura !== "-" ? "📏 " + j.altura : ""}</div>`
+            }
+          </div>
+          ${j.dorsal ? `<span style="font-size:13px;font-weight:700;color:var(--accent);margin-right:4px">#${j.dorsal}</span>` : ""}
+          ${clubDotHTML(j.escudo)}
         </div>
-        ${j.dorsal ? `<span style="font-size:13px;font-weight:700;color:var(--accent);margin-right:4px">#${j.dorsal}</span>` : ""}
-        ${clubDotHTML(j.escudo)}
-      </div>
-    `).join("");
+      `;
+    }).join("");
 
     const adminDiv = $("admin" + eq);
     if (adminDiv) adminDiv.style.display = isAdmin ? "flex" : "none";

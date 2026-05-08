@@ -476,19 +476,47 @@ input:focus {
   color: var(--text-muted);
 }
 
+/* ── CAPITÁN ── */
+.jugador-card.capitan {
+  border-left: 4px solid #f59e0b;
+  background: linear-gradient(145deg, #0f172a, #1c2340);
+}
+
+.jugador-card.capitan:hover {
+  box-shadow: 0 10px 30px rgba(245,158,11,0.25);
+}
+
+.capitan-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #f59e0b;
+  margin-top: 4px;
+}
+
 /* Dot de club */
 .jugador-club-dot {
-  width: 10px;
-  height: 10px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   flex-shrink: 0;
   margin-left: auto;
 }
 
-/* River Plate — degradado rojo/blanco diagonal */
+/* River Plate — diagonal rojo/blanco */
 .dot-river {
-  background: linear-gradient(135deg, #ffffff 50%, #CC0000 50%);
+  background: linear-gradient(135deg, #CC0000 50%, #ffffff 50%);
   border: 1px solid rgba(255,255,255,0.25);
+}
+
+/* Boca Juniors — diagonal azul/amarillo */
+.dot-boca {
+  background: linear-gradient(135deg, #003087 50%, #f5d000 50%);
+  border: 1px solid rgba(255,255,255,0.15);
 }
 
 /* =============================================
