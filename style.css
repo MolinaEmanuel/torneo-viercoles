@@ -505,92 +505,6 @@ input:focus {
 .modal-actions button { flex: 1; }
 
 /* =============================================
-   MODAL JUGADOR
-   ============================================= */
-.modal-jugador {
-  position: fixed;
-  inset: 0;
-  display: none;
-  z-index: 999999;
-}
-
-.modal-jugador.activo { display: block; }
-
-.modal-jugador .overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(2,6,23,0.85);
-  backdrop-filter: blur(8px);
-  z-index: 1;
-}
-
-.card-jugador {
-  position: relative;
-  z-index: 2;
-  margin: auto;
-  top: 50%;
-  transform: translateY(-50%) scale(0.9);
-  background: radial-gradient(circle at top, var(--bg-card-2), var(--bg-deep));
-  border-radius: 20px;
-  padding: 28px 22px;
-  width: min(320px, 90vw);
-  text-align: center;
-  opacity: 0;
-  transition: all 0.35s ease;
-  border: 1px solid var(--border);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-}
-
-.modal-jugador.activo .card-jugador {
-  opacity: 1;
-  transform: translateY(-50%) scale(1);
-}
-
-.card-jugador img {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid rgba(239,68,68,0.6);
-  margin-bottom: 14px;
-}
-
-.card-jugador h2 {
-  font-size: 1.2rem;
-  color: var(--accent);
-  margin: 8px 0 4px;
-}
-
-.card-jugador p {
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  margin: 4px 0;
-}
-
-.card-jugador input {
-  width: 100%;
-  margin: 6px 0;
-  padding: 9px 12px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,0.07);
-  color: white;
-  font-size: 0.9rem;
-  outline: none;
-  transition: border-color var(--transition);
-}
-
-.card-jugador input:focus { border-color: var(--accent); }
-
-.card-jugador .modal-btns {
-  display: flex;
-  gap: 8px;
-  margin-top: 14px;
-}
-
-.card-jugador .modal-btns button { flex: 1; }
-
-/* =============================================
    ADMIN INLINE
    ============================================= */
 .admin-inline {
@@ -724,3 +638,11 @@ main {
   .card { padding: 14px; }
 }
 
+/* FIFA card scroll en mobile */
+@media (max-width: 480px) {
+  .fifa-card-wrap {
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 20px;
+  }
+}

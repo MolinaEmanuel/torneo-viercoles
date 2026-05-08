@@ -16,6 +16,18 @@ const EQUIPO_B  = "Equipo HEBER";
 const PASS      = "cogi2";
 const DB_DOC    = doc(db, "torneo", "datos");
 
+/* ── ESCUDOS (ruta local) ─────────────────────────── */
+// Agregá acá los clubes que uses; la clave debe coincidir
+// exactamente con lo que guardás en jugador.escudo
+const ESCUDOS = {
+  "River Plate":   "assets/images/escudos/river.png",
+  "Boca Juniors":  "assets/images/escudos/boca.png",
+  "Independiente": "assets/images/escudos/independiente.png",
+  "Racing":        "assets/images/escudos/racing.png",
+  "San Lorenzo":   "assets/images/escudos/sanlorenzo.png",
+  "Huracán":       "assets/images/escudos/huracan.png",
+};
+
 /* ── DOM ──────────────────────────────────────────── */
 const $ = id => document.getElementById(id);
 const modalLogin        = $("modalLogin");
@@ -51,12 +63,14 @@ function generarFechas() {
 }
 
 function normalizarJugador(j) {
-  if (typeof j === "string") return { nombre: j, altura: "-", nacimiento: "-", foto: "" };
+  if (typeof j === "string") return { nombre: j, altura: "-", nacimiento: "-", foto: "", dorsal: "", escudo: "" };
   return {
     nombre:     j?.nombre     || "-",
     altura:     j?.altura     || "-",
     nacimiento: j?.nacimiento || "-",
-    foto:       j?.foto       || ""
+    foto:       j?.foto       || "",
+    dorsal:     j?.dorsal     || "",
+    escudo:     j?.escudo     || "",
   };
 }
 
@@ -69,6 +83,401 @@ function updateAdminUI() {
   $("btnAdminLogin").style.display  = isAdmin ? "none"         : "inline-block";
   $("btnAdminLogout").style.display = isAdmin ? "inline-block" : "none";
 }
+
+/* ── FIFA CARD STYLES (inyectados una sola vez) ───── */
+(function inyectarEstilosFIFA() {
+  if (document.getElementById("fv-fifa-styles")) return;
+  const style = document.createElement("style");
+  style.id = "fv-fifa-styles";
+  style.textContent = `
+    .modal-fifa {
+      position: fixed;
+      inset: 0;
+      display: none;
+      z-index: 999999;
+    }
+    .modal-fifa.activo { display: block; }
+
+    .modal-fifa .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(2,6,23,0.88);
+      backdrop-filter: blur(8px);
+    }
+
+    .fifa-card-wrap {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.85) perspective(900px) rotateY(-25deg);
+      opacity: 0;
+      transition: transform 0.42s cubic-bezier(0.175,0.885,0.32,1.275),
+                  opacity   0.35s ease;
+      z-index: 2;
+    }
+
+    .modal-fifa.activo .fifa-card-wrap {
+      transform: translate(-50%, -50%) scale(1) perspective(900px) rotateY(0deg);
+      opacity: 1;
+    }
+
+    .fifa-card {
+      width: 240px;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1.5px solid rgba(239,68,68,0.45);
+      background: var(--bg-card, #0f172a);
+      box-shadow:
+        0 0 0 1px rgba(239,68,68,0.08),
+        0 30px 70px rgba(0,0,0,0.75),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    .fcard-top {
+      position: relative;
+      height: 255px;
+      overflow: hidden;
+      background: linear-gradient(160deg, #0a0f1e 0%, #1a2540 50%, #0a0f1e 100%);
+    }
+
+    .fcard-lines {
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          112deg,
+          rgba(239,68,68,0.04) 0px, rgba(239,68,68,0.04) 1px,
+          transparent 1px, transparent 52px
+        ),
+        repeating-linear-gradient(
+          22deg,
+          rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px,
+          transparent 1px, transparent 68px
+        );
+    }
+
+    .fcard-accent-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(239,68,68,0.4) 15%,
+        #ef4444 50%,
+        rgba(239,68,68,0.4) 85%,
+        transparent 100%
+      );
+    }
+
+    .fcard-dorsal {
+      position: absolute;
+      top: 12px; left: 14px;
+      font-size: 38px;
+      font-weight: 900;
+      color: #ef4444;
+      font-family: 'Arial Black', Arial, sans-serif;
+      line-height: 1;
+      letter-spacing: -2px;
+      text-shadow: 0 2px 16px rgba(239,68,68,0.35);
+    }
+
+    .fcard-escudo-box {
+      position: absolute;
+      top: 12px; right: 12px;
+      width: 40px; height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.1);
+      overflow: hidden;
+    }
+    .fcard-escudo-box img {
+      width: 32px; height: 32px;
+      object-fit: contain;
+    }
+    .fcard-escudo-fallback {
+      font-size: 8px; font-weight: 800;
+      color: rgba(255,255,255,0.6);
+      text-align: center; letter-spacing: 0.5px;
+      padding: 2px;
+    }
+
+    .fcard-photo-wrap {
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 165px; height: 210px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .fcard-photo-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      filter: grayscale(15%) contrast(1.05);
+    }
+    .fcard-silhouette {
+      width: 100px; height: 165px;
+      opacity: 0.15;
+    }
+
+    .fcard-bottom {
+      background: linear-gradient(to bottom, #0f172a, #020617);
+      padding: 14px 16px 18px;
+      border-top: 1px solid rgba(239,68,68,0.2);
+    }
+
+    .fcard-nombre-box {
+      text-align: center;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .fcard-nombre {
+      font-size: 19px;
+      font-weight: 900;
+      color: #f1f5f9;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      line-height: 1.15;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    .fcard-sub {
+      font-size: 10px;
+      color: rgba(239,68,68,0.7);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    .fcard-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .fcard-stat {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 8px;
+      padding: 8px 10px;
+      text-align: center;
+    }
+    .fcard-stat-label {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #ef4444;
+      margin-bottom: 4px;
+    }
+    .fcard-stat-val {
+      font-size: 13px;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+
+    .fcard-footer {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 8px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(239,68,68,0.3);
+      font-weight: 700;
+    }
+
+    .fcard-close {
+      position: absolute;
+      top: -13px; right: -13px;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: #ef4444;
+      border: 2px solid #020617;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 900;
+      color: white;
+      line-height: 1;
+      transition: background 0.15s, transform 0.15s;
+      z-index: 3;
+    }
+    .fcard-close:hover { background: #ff6b6b; transform: scale(1.12); }
+
+    /* Admin panel dentro de la card */
+    .fcard-admin {
+      margin-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .fcard-admin input {
+      width: 100%;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      color: #f1f5f9;
+      padding: 7px 10px;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+    .fcard-admin input:focus { border-color: #ef4444; }
+    .fcard-admin .admin-btns {
+      display: flex;
+      gap: 8px;
+    }
+    .fcard-admin .admin-btns button { flex: 1; font-size: 0.78rem; padding: 8px 6px; }
+
+    /* Dot indicador de club en la lista de jugadores */
+    .jugador-club-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+  `;
+  document.head.appendChild(style);
+})();
+
+/* ── MODAL FIFA CARD ──────────────────────────────── */
+window.abrirJugador = (j, index, equipo) => {
+  // Eliminar modal previo si existe
+  document.querySelector(".modal-fifa")?.remove();
+
+  const isAdmin  = window.admin === true;
+  const escudoPath = ESCUDOS[j.escudo] || ESCUDOS[j.nombre] || "";
+  const fotoPath   = j.foto
+    ? (j.foto.startsWith("http") ? j.foto : j.foto)
+    : "";
+
+  const modal = document.createElement("div");
+  modal.className = "modal-fifa";
+
+  // Parte admin (visible solo en modo admin)
+  const adminHTML = isAdmin ? `
+    <div class="fcard-admin">
+      <input id="editNombre"     value="${j.nombre}"     placeholder="Nombre">
+      <input id="editAltura"     value="${j.altura}"     placeholder="Altura (ej: 1.75)">
+      <input id="editNacimiento" value="${j.nacimiento}" placeholder="Nacimiento (dd/mm/aaaa)">
+      <input id="editDorsal"     value="${j.dorsal}"     placeholder="Dorsal (ej: 10)">
+      <input id="editEscudo"     value="${j.escudo}"     placeholder="Club (ej: River Plate)">
+      <input id="editFoto"       value="${j.foto}"       placeholder="Ruta foto (assets/images/jugadores/...)">
+      <div class="admin-btns">
+        <button onclick="guardarEdicionJugador('${equipo}',${index})">Guardar</button>
+        <button onclick="eliminarJugador('${equipo}',${index})" style="background:var(--accent-dark)">Eliminar</button>
+      </div>
+    </div>
+  ` : "";
+
+  modal.innerHTML = `
+    <div class="overlay"></div>
+    <div class="fifa-card-wrap" onclick="event.stopPropagation()">
+      <button class="fcard-close" onclick="document.querySelector('.modal-fifa')?.remove()" aria-label="Cerrar">&#x2715;</button>
+      <div class="fifa-card">
+        <div class="fcard-top">
+          <div class="fcard-lines"></div>
+          <div class="fcard-dorsal">${j.dorsal || ""}</div>
+          <div class="fcard-escudo-box" id="fcEscudo"></div>
+          <div class="fcard-photo-wrap" id="fcFoto"></div>
+          <div class="fcard-accent-bar"></div>
+        </div>
+        <div class="fcard-bottom">
+          <div class="fcard-nombre-box">
+            <div class="fcard-nombre">${j.nombre}</div>
+            <div class="fcard-sub">${j.escudo || "Fútbol Viércoles"}</div>
+          </div>
+          <div class="fcard-stats">
+            <div class="fcard-stat">
+              <div class="fcard-stat-label">Altura</div>
+              <div class="fcard-stat-val">${j.altura !== "-" ? j.altura : "—"}</div>
+            </div>
+            <div class="fcard-stat">
+              <div class="fcard-stat-label">Nacimiento</div>
+              <div class="fcard-stat-val">${j.nacimiento !== "-" ? j.nacimiento : "—"}</div>
+            </div>
+          </div>
+          ${adminHTML}
+          <div class="fcard-footer">Torneo Apertura 2026</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Cerrar al click en overlay
+  modal.addEventListener("click", e => {
+    if (e.target === modal || e.target.classList.contains("overlay")) {
+      modal.remove();
+    }
+  });
+
+  // Cerrar con Escape
+  const onKey = e => {
+    if (e.key === "Escape") { modal.remove(); document.removeEventListener("keydown", onKey); }
+  };
+  document.addEventListener("keydown", onKey);
+
+  document.body.appendChild(modal);
+
+  // Activar animación de entrada
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => modal.classList.add("activo"));
+  });
+
+  // Escudo: intentar cargar imagen, fallback a texto
+  const escudoBox = modal.querySelector("#fcEscudo");
+  if (escudoPath) {
+    const img = document.createElement("img");
+    img.alt = j.escudo || "";
+    img.onerror = () => {
+      escudoBox.innerHTML = `<span class="fcard-escudo-fallback">${(j.escudo || "").slice(0,3).toUpperCase()}</span>`;
+    };
+    img.src = escudoPath;
+    escudoBox.appendChild(img);
+  } else if (j.escudo) {
+    escudoBox.innerHTML = `<span class="fcard-escudo-fallback">${j.escudo.slice(0,3).toUpperCase()}</span>`;
+  }
+
+  // Foto: ruta local, fallback a silueta SVG
+  const fotoWrap = modal.querySelector("#fcFoto");
+  if (fotoPath) {
+    const fotoImg = document.createElement("img");
+    fotoImg.alt = j.nombre;
+    fotoImg.onerror = () => { fotoWrap.innerHTML = siluetaSVG(); };
+    fotoImg.src = fotoPath;
+    fotoWrap.appendChild(fotoImg);
+  } else {
+    fotoWrap.innerHTML = siluetaSVG();
+  }
+};
+
+function siluetaSVG() {
+  return `<svg class="fcard-silhouette" viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="32" rx="23" ry="26" fill="white"/>
+    <path d="M8 160 Q14 102 50 92 Q86 102 92 160Z" fill="white"/>
+  </svg>`;
+}
+
+window.abrirJugadorIndex = (equipo, index) => {
+  abrirJugador(planteles[equipo][index], index, equipo);
+};
+
+// Delegación de click en jugador-cards
+document.addEventListener("click", e => {
+  const card = e.target.closest(".jugador-card");
+  if (card) abrirJugadorIndex(card.dataset.equipo, parseInt(card.dataset.index));
+});
 
 /* ── FIREBASE: CARGA & GUARDADO ───────────────────── */
 function cargarDatos() {
@@ -110,7 +519,7 @@ window.verificarLogin = () => {
     modalLogin.style.display = "none";
     renderAll();
     updateAdminUI();
-    document.querySelector(".modal-jugador")?.remove();
+    document.querySelector(".modal-fifa")?.remove();
   } else {
     passwordInput.value = "";
     passwordInput.placeholder = "Contraseña incorrecta";
@@ -126,12 +535,10 @@ window.logout = () => {
   updateAdminUI();
 };
 
-// Enter key en login
 passwordInput.addEventListener("keydown", e => {
   if (e.key === "Enter") window.verificarLogin();
 });
 
-// Cerrar modal login al hacer click fuera
 modalLogin.addEventListener("click", e => {
   if (e.target === modalLogin) modalLogin.style.display = "none";
 });
@@ -140,7 +547,6 @@ modalLogin.addEventListener("click", e => {
 window.mostrarSeccion = (id) => {
   const secciones = document.querySelectorAll(".seccion");
 
-  // Actualizar botón activo
   document.querySelectorAll(".nav-btn[data-section]").forEach(btn => {
     btn.classList.toggle("active-nav", btn.dataset.section === id);
   });
@@ -195,11 +601,15 @@ window.editarMVP = (index, nombre) => {
 window.agregarJugador = (equipo) => {
   const nombre = prompt("Nombre completo");
   if (!nombre) return;
+  const dorsal     = prompt("Dorsal (número de camiseta)") || "";
   const altura     = prompt("Altura (ej: 1.75)") || "-";
   const nacimiento = prompt("Fecha de nacimiento (dd/mm/aaaa)") || "-";
-  const foto       = prompt("URL o ruta de la foto (dejar vacío para avatar)") || "";
+  const escudo     = prompt("Club (ej: River Plate, Boca Juniors, Independiente...)") || "";
+  // La foto se agrega editando al jugador luego de subirla a assets/images/jugadores/
+  const foto       = "";
+
   if (!planteles[equipo]) planteles[equipo] = [];
-  planteles[equipo].push({ nombre, altura, nacimiento, foto });
+  planteles[equipo].push({ nombre, dorsal, altura, nacimiento, escudo, foto });
   guardar();
   renderPlanteles();
 };
@@ -209,19 +619,21 @@ window.eliminarJugador = (equipo, index) => {
   planteles[equipo].splice(index, 1);
   guardar();
   renderPlanteles();
-  document.querySelector(".modal-jugador")?.remove();
+  document.querySelector(".modal-fifa")?.remove();
 };
 
 window.guardarEdicionJugador = (equipo, index) => {
   planteles[equipo][index] = {
-    nombre:     $("editNombre").value,
-    altura:     $("editAltura").value,
-    nacimiento: $("editNacimiento").value,
-    foto:       $("editFoto").value,
+    nombre:     $("editNombre").value.trim(),
+    altura:     $("editAltura").value.trim(),
+    nacimiento: $("editNacimiento").value.trim(),
+    dorsal:     $("editDorsal").value.trim(),
+    escudo:     $("editEscudo").value.trim(),
+    foto:       $("editFoto").value.trim(),
   };
   guardar();
   renderPlanteles();
-  document.querySelector(".modal-jugador")?.remove();
+  document.querySelector(".modal-fifa")?.remove();
 };
 
 window.setFotoEquipo = (equipo) => {
@@ -241,57 +653,6 @@ function toggleEquipo(eq) {
   titulo.setAttribute("aria-expanded", String(!abierto));
 }
 window.toggleEquipo = toggleEquipo;
-
-/* ── MODAL JUGADOR ────────────────────────────────── */
-window.abrirJugador = (j, index, equipo) => {
-  const isAdmin = window.admin === true;
-  const modal   = document.createElement("div");
-  modal.className = "modal-jugador activo";
-
-  modal.innerHTML = `
-    <div class="overlay"></div>
-    <div class="card-jugador" onclick="event.stopPropagation()">
-      <img src="${avatarUrl(j.foto)}" alt="${j.nombre}" onerror="this.src='${avatarUrl('')}'">
-      ${isAdmin ? `
-        <input id="editNombre"     value="${j.nombre}"     placeholder="Nombre">
-        <input id="editAltura"     value="${j.altura}"     placeholder="Altura">
-        <input id="editNacimiento" value="${j.nacimiento}" placeholder="Nacimiento">
-        <input id="editFoto"       value="${j.foto}"       placeholder="URL foto">
-        <div class="modal-btns">
-          <button onclick="guardarEdicionJugador('${equipo}',${index})">💾 Guardar</button>
-          <button onclick="eliminarJugador('${equipo}',${index})" style="background:var(--accent-dark)">🗑 Eliminar</button>
-        </div>
-      ` : `
-        <h2>${j.nombre}</h2>
-        <p>📏 ${j.altura}</p>
-        <p>🎂 ${j.nacimiento}</p>
-        <div class="modal-btns">
-          <button onclick="document.querySelector('.modal-jugador')?.remove()">Cerrar</button>
-        </div>
-      `}
-    </div>
-  `;
-
-  modal.addEventListener("click", e => {
-    if (e.target === modal || e.target.classList.contains("overlay")) modal.remove();
-  });
-
-  // Escape key
-  const onKey = e => { if (e.key === "Escape") { modal.remove(); document.removeEventListener("keydown", onKey); } };
-  document.addEventListener("keydown", onKey);
-
-  document.body.appendChild(modal);
-};
-
-window.abrirJugadorIndex = (equipo, index) => {
-  abrirJugador(planteles[equipo][index], index, equipo);
-};
-
-// Delegación de click en jugador-cards
-document.addEventListener("click", e => {
-  const card = e.target.closest(".jugador-card");
-  if (card) abrirJugadorIndex(card.dataset.equipo, parseInt(card.dataset.index));
-});
 
 /* ── RENDER ───────────────────────────────────────── */
 function renderAll() {
@@ -419,20 +780,36 @@ function renderRanking() {
     : `<p style="text-align:center;color:var(--text-muted)">Aún no hay MVPs registrados.</p>`;
 }
 
+/* Colores de punto indicador por club */
+const CLUB_COLORS = {
+  "River Plate":   "#CC0000",
+  "Boca Juniors":  "#003087",
+  "Independiente": "#CC0000",
+  "Racing":        "#6BBFFF",
+  "San Lorenzo":   "#CC0000",
+  "Huracán":       "#FFFFFF",
+};
+
 function renderPlanteles() {
   const isAdmin = window.admin === true;
 
   ["A","B"].forEach(eq => {
     const lista = eq === "A" ? listaA : listaB;
-    lista.innerHTML = (planteles[eq] || []).map((j, i) => `
-      <div class="card jugador-card" data-equipo="${eq}" data-index="${i}">
-        <img src="${avatarUrl(j.foto)}" alt="${j.nombre}" onerror="this.src='${avatarUrl('')}'">
-        <div>
-          <strong>${j.nombre}</strong>
-          <div>${j.altura !== "-" ? "📏 " + j.altura : ""}</div>
+
+    lista.innerHTML = (planteles[eq] || []).map((j, i) => {
+      const dotColor = CLUB_COLORS[j.escudo] || "rgba(255,255,255,0.3)";
+      return `
+        <div class="card jugador-card" data-equipo="${eq}" data-index="${i}">
+          <img src="${avatarUrl(j.foto)}" alt="${j.nombre}" onerror="this.src='${avatarUrl('')}'">
+          <div style="flex:1">
+            <strong>${j.nombre}</strong>
+            <div>${j.altura !== "-" ? "📏 " + j.altura : ""}</div>
+          </div>
+          ${j.dorsal ? `<span style="font-size:13px;font-weight:700;color:var(--accent);margin-right:4px">#${j.dorsal}</span>` : ""}
+          <span class="jugador-club-dot" style="background:${dotColor}" title="${j.escudo || ""}"></span>
         </div>
-      </div>
-    `).join("");
+      `;
+    }).join("");
 
     const adminDiv = $("admin" + eq);
     if (adminDiv) adminDiv.style.display = isAdmin ? "flex" : "none";
