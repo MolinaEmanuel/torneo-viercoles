@@ -507,9 +507,9 @@ input:focus {
   margin-left: auto;
 }
 
-/* River Plate — diagonal rojo/blanco */
+/* River Plate — diagonal rojo/blanco/rojo */
 .dot-river {
-  background: linear-gradient(135deg, #CC0000 50%, #ffffff 50%);
+  background: linear-gradient(135deg, #ffffff 35%, #CC0000 30%, #ffffff 35%);
   border: 1px solid rgba(255,255,255,0.25);
 }
 
