@@ -730,3 +730,168 @@ input {
   position: relative;
   z-index: 2;
 }
+
+/* 🔥 FIFA PLAYER CARDS */
+
+.equipo-lista{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+}
+
+.fifa-card{
+  width:220px;
+  min-height:340px;
+
+  position:relative;
+
+  border-radius:22px;
+
+  overflow:hidden;
+
+  cursor:pointer;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(239,68,68,0.15),
+      rgba(15,23,42,1)
+    );
+
+  border:1px solid rgba(255,255,255,0.08);
+
+  transition:0.35s ease;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.45);
+
+  backdrop-filter:blur(10px);
+}
+
+.fifa-card::before{
+  content:"";
+
+  position:absolute;
+  inset:0;
+
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(239,68,68,0.35),
+      transparent 60%
+    );
+
+  pointer-events:none;
+}
+
+.fifa-card:hover{
+  transform:translateY(-8px) scale(1.03);
+
+  box-shadow:
+    0 20px 40px rgba(239,68,68,0.28);
+}
+
+.fifa-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+
+  padding:16px;
+}
+
+.fifa-dorsal{
+  font-size:38px;
+  font-weight:900;
+  color:white;
+  line-height:1;
+}
+
+.fifa-icons{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.bandera,
+.escudo{
+  width:34px;
+  height:34px;
+
+  object-fit:contain;
+
+  border-radius:6px;
+
+  background:rgba(255,255,255,0.08);
+
+  padding:3px;
+}
+
+.fifa-player-image{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  margin-top:-10px;
+}
+
+.fifa-player-image img{
+  width:150px;
+  height:150px;
+
+  object-fit:cover;
+
+  border-radius:16px;
+
+  border:3px solid rgba(255,255,255,0.08);
+
+  box-shadow:
+    0 10px 25px rgba(0,0,0,0.45);
+}
+
+.fifa-bottom{
+  padding:18px;
+  text-align:center;
+}
+
+.fifa-name{
+  font-size:22px;
+  font-weight:800;
+
+  margin-bottom:10px;
+
+  color:white;
+}
+
+.fifa-info{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+
+  font-size:14px;
+
+  opacity:0.9;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+  .fifa-card{
+    width:170px;
+    min-height:300px;
+  }
+
+  .fifa-player-image img{
+    width:120px;
+    height:120px;
+  }
+
+  .fifa-name{
+    font-size:18px;
+  }
+
+  .fifa-dorsal{
+    font-size:30px;
+  }
+
+}
