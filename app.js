@@ -104,12 +104,17 @@ function clubDotHTML(escudo) {
   return `<span class="jugador-club-dot" style="background:${color}" title="${escudo}"></span>`;
 }
 
-/* ── BUSCAR JUGADOR POR NOMBRE ────────────────────── */
-function buscarJugadorPorNombre(nombre) {
+/* ── BUSCAR JUGADOR POR APODO O NOMBRE ───────────── */
+function buscarJugadorPorNombre(texto) {
+  const t = texto.trim().toLowerCase();
+  // 1ª pasada: busca por apodo
   for (const eq of ["A", "B"]) {
-    const idx = (planteles[eq] || []).findIndex(
-      j => j.nombre.trim().toLowerCase() === nombre.trim().toLowerCase()
-    );
+    const idx = (planteles[eq] || []).findIndex(j => j.apodo?.trim().toLowerCase() === t);
+    if (idx !== -1) return { equipo: eq, index: idx };
+  }
+  // 2ª pasada: fallback por nombre completo
+  for (const eq of ["A", "B"]) {
+    const idx = (planteles[eq] || []).findIndex(j => j.nombre.trim().toLowerCase() === t);
     if (idx !== -1) return { equipo: eq, index: idx };
   }
   return null;
@@ -330,8 +335,8 @@ function buscarJugadorPorNombre(nombre) {
     .fcard-escudo-box {
       position: absolute;
       top: 12px; right: 12px;
-      width: 40px; height: 40px;
-      border-radius: 8px;
+      width: 52px; height: 52px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -339,7 +344,7 @@ function buscarJugadorPorNombre(nombre) {
       border: 1px solid rgba(255,255,255,0.1);
       overflow: hidden;
     }
-    .fcard-escudo-box img { width: 32px; height: 32px; object-fit: contain; }
+    .fcard-escudo-box img { width: 42px; height: 42px; object-fit: contain; }
     .fcard-escudo-fallback {
       font-size: 8px; font-weight: 800;
       color: rgba(255,255,255,0.6);
@@ -937,13 +942,13 @@ function renderPlanteles() {
       const esCapitan = i === 0;
       const subtitulo = esCapitan
         ? `<div class="capitan-badge">Capitán</div>`
-        : `<div>${j.apodo ? j.apodo : (j.altura !== "-" ? j.altura : "")}</div>`;
+        : `<div style="font-size:0.8rem;color:var(--text-muted)">${j.apodo || j.altura !== "-" ? (j.apodo || j.altura) : ""}</div>`;
       return `
         <div class="card jugador-card${esCapitan ? " capitan" : ""}" data-equipo="${eq}" data-index="${i}">
           <img src="${avatarUrl(j.foto)}" alt="${j.nombre}" onerror="this.src='${avatarUrl('')}'">
           <div style="flex:1">
-            <strong>${j.nombre}</strong>
-            ${subtitulo}
+            <strong>${j.apodo || j.nombre}</strong>
+            ${esCapitan ? subtitulo : `<div style="font-size:0.8rem;color:var(--text-muted)">${j.nombre}</div>`}
           </div>
           ${j.dorsal ? `<span style="font-size:13px;font-weight:700;color:var(--accent);margin-right:4px">#${j.dorsal}</span>` : ""}
           ${clubDotHTML(j.escudo)}
