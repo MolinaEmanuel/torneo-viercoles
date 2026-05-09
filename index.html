@@ -39,11 +39,12 @@
 
   <!-- NAVBAR -->
   <nav class="topbar" role="navigation" aria-label="Menú principal">
-    <button onclick="mostrarSeccion('inicio')"     class="nav-btn active-nav" data-section="inicio">Inicio</button>
-    <button onclick="mostrarSeccion('plantel')"    class="nav-btn" data-section="plantel">Plantel</button>
-    <button onclick="mostrarSeccion('historial')"  class="nav-btn" data-section="historial">Historial</button>
-    <button onclick="mostrarSeccion('ranking')"    class="nav-btn" data-section="ranking">Ranking MVP</button>
-    <button onclick="mostrarSeccion('cumples')"    class="nav-btn" data-section="cumples">Cumpleaños</button>
+    <button onclick="mostrarSeccion('inicio')"    class="nav-btn active-nav" data-section="inicio">Inicio</button>
+    <button onclick="mostrarSeccion('plantel')"   class="nav-btn" data-section="plantel">Plantel</button>
+    <button onclick="mostrarSeccion('historial')" class="nav-btn" data-section="historial">Historial</button>
+    <button onclick="mostrarSeccion('ranking')"   class="nav-btn" data-section="ranking">Ranking MVP</button>
+    <button onclick="mostrarSeccion('cumples')"   class="nav-btn" data-section="cumples">Cumpleaños</button>
+    <button onclick="mostrarSeccion('palma res')" class="nav-btn" data-section="palmares">Palmarés</button>
     <button onclick="abrirLogin()"  class="nav-btn btn-admin"  id="btnAdminLogin">Modo Admin</button>
     <button onclick="logout()"      class="nav-btn btn-logout" id="btnAdminLogout" style="display:none">Salir Admin</button>
   </nav>
@@ -78,12 +79,10 @@
           </div>
         </div>
       </div>
-
       <div class="card">
         <h2>Tabla de posiciones</h2>
         <div id="tabla"></div>
       </div>
-
       <div class="card">
         <h2>Partidos</h2>
         <div class="table-wrapper">
@@ -96,7 +95,6 @@
     <section id="plantel" class="seccion">
       <div class="card">
         <h2>Planteles</h2>
-
         <div class="equipo">
           <div class="equipo-titulo equipo-titulo-a" onclick="toggleEquipo('A')" role="button" tabindex="0" aria-expanded="false" id="titleA">
             <span>Equipo SEBA</span>
@@ -109,7 +107,6 @@
           <img id="imgEquipoA" class="foto-equipo" style="display:none;" alt="Foto Equipo A">
           <div id="listaA" class="equipo-lista"></div>
         </div>
-
         <div class="equipo">
           <div class="equipo-titulo equipo-titulo-b" onclick="toggleEquipo('B')" role="button" tabindex="0" aria-expanded="false" id="titleB">
             <span>Equipo HEBER</span>
@@ -147,6 +144,11 @@
         <h2>Cumpleaños</h2>
         <div id="cumpleContenido"></div>
       </div>
+    </section>
+
+    <!-- SECCIÓN: PALMARÉS -->
+    <section id="palmares" class="seccion">
+      <div id="palmaresContenido"></div>
     </section>
 
   </main>
