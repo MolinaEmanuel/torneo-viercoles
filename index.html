@@ -39,12 +39,13 @@
 
   <!-- NAVBAR -->
   <nav class="topbar" role="navigation" aria-label="Menú principal">
-    <button onclick="mostrarSeccion('inicio')" class="nav-btn active-nav" data-section="inicio">Inicio</button>
-    <button onclick="mostrarSeccion('plantel')" class="nav-btn" data-section="plantel">Plantel</button>
-    <button onclick="mostrarSeccion('historial')" class="nav-btn" data-section="historial">Historial</button>
-    <button onclick="mostrarSeccion('ranking')" class="nav-btn" data-section="ranking">Ranking MVP</button>
-    <button onclick="abrirLogin()" class="nav-btn btn-admin" id="btnAdminLogin">Modo Admin</button>
-    <button onclick="logout()" class="nav-btn btn-logout" id="btnAdminLogout" style="display:none">Salir Admin</button>
+    <button onclick="mostrarSeccion('inicio')"     class="nav-btn active-nav" data-section="inicio">Inicio</button>
+    <button onclick="mostrarSeccion('plantel')"    class="nav-btn" data-section="plantel">Plantel</button>
+    <button onclick="mostrarSeccion('historial')"  class="nav-btn" data-section="historial">Historial</button>
+    <button onclick="mostrarSeccion('ranking')"    class="nav-btn" data-section="ranking">Ranking MVP</button>
+    <button onclick="mostrarSeccion('cumples')"    class="nav-btn" data-section="cumples">Cumpleaños</button>
+    <button onclick="abrirLogin()"  class="nav-btn btn-admin"  id="btnAdminLogin">Modo Admin</button>
+    <button onclick="logout()"      class="nav-btn btn-logout" id="btnAdminLogout" style="display:none">Salir Admin</button>
   </nav>
 
   <!-- LOGIN MODAL -->
@@ -59,10 +60,10 @@
     </div>
   </div>
 
-  <!-- SECCIÓN: INICIO -->
   <main>
-    <section id="inicio" class="seccion activa">
 
+    <!-- SECCIÓN: INICIO -->
+    <section id="inicio" class="seccion activa">
       <div class="cards-top">
         <div class="card highlight">
           <h3>Fecha actual</h3>
@@ -89,7 +90,6 @@
           <table id="partidos"></table>
         </div>
       </div>
-
     </section>
 
     <!-- SECCIÓN: PLANTEL -->
@@ -104,7 +104,7 @@
           </div>
           <div class="equipo-admin" id="adminA" style="display:none;">
             <button onclick="agregarJugador('A')" id="btnA">+ Agregar jugador</button>
-            <button onclick="setFotoEquipo('A')" id="fotoA">📷 Foto equipo</button>
+            <button onclick="setFotoEquipo('A')"  id="fotoA">📷 Foto equipo</button>
           </div>
           <img id="imgEquipoA" class="foto-equipo" style="display:none;" alt="Foto Equipo A">
           <div id="listaA" class="equipo-lista"></div>
@@ -117,7 +117,7 @@
           </div>
           <div class="equipo-admin" id="adminB" style="display:none;">
             <button onclick="agregarJugador('B')" id="btnB">+ Agregar jugador</button>
-            <button onclick="setFotoEquipo('B')" id="fotoB">📷 Foto equipo</button>
+            <button onclick="setFotoEquipo('B')"  id="fotoB">📷 Foto equipo</button>
           </div>
           <img id="imgEquipoB" class="foto-equipo" style="display:none;" alt="Foto Equipo B">
           <div id="listaB" class="equipo-lista"></div>
@@ -140,10 +140,18 @@
         <div id="rankingContenido"></div>
       </div>
     </section>
+
+    <!-- SECCIÓN: CUMPLEAÑOS -->
+    <section id="cumples" class="seccion">
+      <div class="card">
+        <h2>Cumpleaños</h2>
+        <div id="cumpleContenido"></div>
+      </div>
+    </section>
+
   </main>
 
   <script type="module" src="app.js"></script>
-
 </body>
 </html>
 

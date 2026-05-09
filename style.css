@@ -33,9 +33,7 @@ body {
 /* =============================================
    LAYOUT WRAPPER
    ============================================= */
-main,
-.topbar,
-.header {
+main, .topbar, .header {
   max-width: 900px;
   margin-inline: auto;
   padding-inline: 20px;
@@ -101,9 +99,7 @@ main,
   transition: transform var(--transition);
 }
 
-.logo-principal:hover {
-  transform: scale(1.15) rotate(-2deg);
-}
+.logo-principal:hover { transform: scale(1.15) rotate(-2deg); }
 
 .header-center {
   text-align: center;
@@ -199,10 +195,7 @@ button:active { transform: scale(0.96); }
   border: 1px solid var(--border);
 }
 
-.btn-secondary:hover {
-  background: #2d3f55;
-  box-shadow: none;
-}
+.btn-secondary:hover { background: #2d3f55; box-shadow: none; }
 
 .btn-admin  { background: #7c3aed; }
 .btn-admin:hover  { box-shadow: 0 8px 20px rgba(124,58,237,0.4); }
@@ -277,7 +270,6 @@ td {
 }
 
 tr:last-child td { border-bottom: none; }
-
 tr:hover td { background: rgba(255,255,255,0.03); }
 
 input[type="number"] {
@@ -303,12 +295,10 @@ input[type="password"] {
   transition: border-color var(--transition);
 }
 
-input:focus {
-  border-color: var(--accent);
-}
+input:focus { border-color: var(--accent); }
 
 /* =============================================
-   FILA (TABLA / HISTORIAL / RANKING)
+   FILA (HISTORIAL / RANKING / TABLA)
    ============================================= */
 .fila {
   padding: 12px 16px;
@@ -328,10 +318,7 @@ input:focus {
   font-size: 0.9rem;
 }
 
-.fila input {
-  margin-top: 5px;
-  width: 140px;
-}
+.fila input { margin-top: 5px; width: 140px; }
 
 .lider {
   background: linear-gradient(90deg, rgba(255,215,0,0.15), rgba(255,140,0,0.15));
@@ -342,32 +329,13 @@ input:focus {
 .lider:hover { background: linear-gradient(90deg, rgba(255,215,0,0.22), rgba(255,140,0,0.22)); }
 
 /* =============================================
-   POSICIONES TABLE STYLE
+   POSICIONES
    ============================================= */
-.fila-tabla {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.fila-pos {
-  width: 24px;
-  font-weight: 700;
-  color: var(--text-muted);
-}
-
+.fila-tabla { display: flex; align-items: center; gap: 10px; }
+.fila-pos   { width: 24px; font-weight: 700; color: var(--text-muted); }
 .fila-nombre { flex: 1; font-weight: 600; }
-
-.fila-pts {
-  font-weight: 700;
-  color: var(--accent);
-  font-size: 1rem;
-}
-
-.fila-gd {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
+.fila-pts   { font-weight: 700; color: var(--accent); font-size: 1rem; }
+.fila-gd    { font-size: 0.8rem; color: var(--text-muted); }
 
 /* =============================================
    EQUIPO / PLANTEL
@@ -390,21 +358,19 @@ input:focus {
 
 .equipo-titulo:hover { filter: brightness(1.1); }
 
-/* Equipo A — gris carbón (camiseta oscura de Seba) */
 .equipo-titulo-a {
   background: linear-gradient(90deg, #374151, #1f2937);
   color: #f1f5f9;
   border: 1px solid rgba(255,255,255,0.1);
 }
 
-/* Equipo B — blanco/plata (camiseta clara de Heber) */
 .equipo-titulo-b {
   background: linear-gradient(90deg, #cbd5e1, #94a3b8);
   color: #0f172a;
 }
 
 .chevron {
-  transition: transform 0.3s ease;
+  transition: transform 0.35s ease;
   font-size: 1.1rem;
 }
 
@@ -418,8 +384,22 @@ input:focus {
   flex-wrap: wrap;
 }
 
+/* ── SLIDE DOWN DEL LISTADO ── */
 .equipo-lista {
-  display: none;
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.4s ease, opacity 0.35s ease, margin-top 0.4s ease;
+  margin-top: 0;
+}
+
+.equipo-lista > .equipo-lista-inner {
+  overflow: hidden;
+}
+
+.equipo-lista.abierto {
+  grid-template-rows: 1fr;
+  opacity: 1;
   margin-top: 12px;
 }
 
@@ -471,11 +451,6 @@ input:focus {
   margin-bottom: 3px;
 }
 
-.jugador-card div > div {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
 /* ── CAPITÁN ── */
 .jugador-card.capitan {
   border-left: 4px solid #f59e0b;
@@ -498,7 +473,33 @@ input:focus {
   margin-top: 4px;
 }
 
-/* Dot de club */
+/* ── BOTONES REORDEN (ADMIN) ── */
+.reorder-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-left: 4px;
+}
+
+.reorder-btns button {
+  padding: 2px 7px;
+  font-size: 0.75rem;
+  line-height: 1;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-muted);
+  transition: background var(--transition), color var(--transition);
+}
+
+.reorder-btns button:hover {
+  background: var(--accent);
+  color: white;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── DOT DE CLUB ── */
 .jugador-club-dot {
   width: 14px;
   height: 14px;
@@ -507,16 +508,212 @@ input:focus {
   margin-left: auto;
 }
 
-/* River Plate — diagonal blanco/rojo */
 .dot-river {
   background: linear-gradient(135deg, #ffffff 50%, #CC0000 50%);
   border: 1px solid rgba(255,255,255,0.25);
 }
 
-/* Boca Juniors — diagonal azul/amarillo */
 .dot-boca {
   background: linear-gradient(135deg, #003087 50%, #f5d000 50%);
   border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* =============================================
+   VIDEO EMBED (PARTIDOS)
+   ============================================= */
+.video-link {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #ef4444;
+  border-radius: 6px;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  transition: background var(--transition), transform var(--transition);
+}
+
+.video-link:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.video-input-wrap {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.video-input-wrap input[type="text"] {
+  width: 160px;
+  font-size: 0.78rem;
+  padding: 4px 8px;
+}
+
+/* =============================================
+   CALENDARIO DE CUMPLEAÑOS
+   ============================================= */
+.cumple-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.cumple-nav button {
+  padding: 6px 14px;
+  font-size: 0.85rem;
+}
+
+.cumple-mes-label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  min-width: 140px;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.cumple-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.cumple-dia-header {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  padding: 4px 0;
+  letter-spacing: 0.5px;
+}
+
+.cumple-dia {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid transparent;
+  cursor: default;
+  transition: background var(--transition), border-color var(--transition);
+  position: relative;
+}
+
+.cumple-dia.vacio {
+  background: transparent;
+  border-color: transparent;
+}
+
+.cumple-dia.hoy {
+  border-color: var(--accent);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.cumple-dia.tiene-cumple {
+  background: rgba(239,68,68,0.12);
+  border-color: rgba(239,68,68,0.4);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.cumple-dia.tiene-cumple:hover {
+  background: rgba(239,68,68,0.22);
+  transform: scale(1.08);
+}
+
+.cumple-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-top: 3px;
+}
+
+/* Tooltip cumpleañero */
+.cumple-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-card-2);
+  border: 1px solid rgba(239,68,68,0.4);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.cumple-dia.tiene-cumple:hover .cumple-tooltip {
+  opacity: 1;
+}
+
+/* Lista de cumpleaños del mes */
+.cumple-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cumple-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.04);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  transition: background var(--transition);
+}
+
+.cumple-item:hover { background: rgba(255,255,255,0.07); }
+
+.cumple-item-dia {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: var(--accent);
+  min-width: 32px;
+  text-align: center;
+}
+
+.cumple-item-nombre {
+  flex: 1;
+}
+
+.cumple-item-nombre strong {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.cumple-item-nombre span {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.cumple-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 20px 0;
+  font-size: 0.9rem;
 }
 
 /* =============================================
@@ -551,11 +748,7 @@ input:focus {
   letter-spacing: 0;
 }
 
-.modal-actions {
-  display: flex;
-  gap: 10px;
-}
-
+.modal-actions { display: flex; gap: 10px; }
 .modal-actions button { flex: 1; }
 
 /* =============================================
@@ -587,10 +780,7 @@ input:focus {
   transition: opacity 0.4s ease;
 }
 
-.loader.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
+.loader.hidden { opacity: 0; pointer-events: none; }
 
 .spinner {
   width: 48px;
@@ -625,26 +815,14 @@ input:focus {
   transform: translateY(-24px) scale(0.97);
 }
 
-main {
-  position: relative;
-  padding-top: 10px;
-}
+main { position: relative; padding-top: 10px; }
 
 /* =============================================
    ANIMATIONS
    ============================================= */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-@keyframes slideInRight {
-  to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes fadeIn      { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideInRight { to { opacity: 1; transform: translateX(0); } }
+@keyframes spin        { to { transform: rotate(360deg); } }
 
 /* =============================================
    RESPONSIVE — MOBILE
@@ -663,15 +841,13 @@ main {
 
   .header-left  { position: static; transform: none; }
   .header-right { position: static; }
-
   .logo-principal  { height: 70px; }
   .logo-secundario { height: 42px; }
 
   h1 { font-size: 1.1rem; }
   h2 { font-size: 1rem; }
 
-  main,
-  .topbar { padding-inline: 12px; }
+  main, .topbar { padding-inline: 12px; }
 
   .topbar {
     width: 100%;
@@ -686,18 +862,14 @@ main {
   .cards-top { flex-direction: column; }
 
   table { font-size: 0.8rem; }
-
   td, th { padding: 8px 6px; }
-
   .card { padding: 14px; }
+
+  .cumple-grid { gap: 2px; }
+  .cumple-dia  { font-size: 0.75rem; border-radius: 6px; }
 }
 
-/* FIFA card scroll en mobile */
 @media (max-width: 480px) {
-  .fifa-card-wrap {
-    max-height: 90vh;
-    overflow-y: auto;
-    border-radius: 20px;
-  }
+  .fifa-card-wrap { max-height: 90vh; overflow-y: auto; border-radius: 20px; }
 }
 
