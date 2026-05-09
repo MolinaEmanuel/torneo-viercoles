@@ -27,8 +27,6 @@ const ESCUDOS = {
 };
 
 /* ── COLORES DOT POR CLUB ─────────────────────────── */
-// River y Boca usan clases CSS con degradado diagonal
-// El resto reciben color sólido inline
 const CLUB_COLORS = {
   "Independiente": "#CC0000",
   "Racing":        "#6BBFFF",
@@ -38,22 +36,22 @@ const CLUB_COLORS = {
 
 /* ── DOM ──────────────────────────────────────────── */
 const $ = id => document.getElementById(id);
-const modalLogin        = $("modalLogin");
-const passwordInput     = $("passwordInput");
-const tablaEl           = $("tabla");
-const partidosEl        = $("partidos");
-const fechaActualEl     = $("fechaActual");
-const jugadorTextoEl    = $("jugadorTexto");
-const adminJugadorEl    = $("adminJugador");
-const historialEl       = $("historialContenido");
-const rankingEl         = $("rankingContenido");
-const loaderEl          = $("loader");
-const listaA            = $("listaA");
-const listaB            = $("listaB");
+const modalLogin     = $("modalLogin");
+const passwordInput  = $("passwordInput");
+const tablaEl        = $("tabla");
+const partidosEl     = $("partidos");
+const fechaActualEl  = $("fechaActual");
+const jugadorTextoEl = $("jugadorTexto");
+const adminJugadorEl = $("adminJugador");
+const historialEl    = $("historialContenido");
+const rankingEl      = $("rankingContenido");
+const loaderEl       = $("loader");
+const listaA         = $("listaA");
+const listaB         = $("listaB");
 
 /* ── ESTADO ───────────────────────────────────────── */
 window.admin = localStorage.getItem("admin") === "true";
-let datos    = [];
+let datos     = [];
 let jugadores = [];
 let planteles = { A: [], B: [] };
 
@@ -63,7 +61,11 @@ function generarFechas() {
   let d = new Date(2026, 3, 1);
   while (fechas.length < 18) {
     if (d.getDay() === 3) {
-      fechas.push({ fecha: d.toLocaleDateString("es-AR",{day:"2-digit",month:"2-digit"}), golesA: null, golesB: null });
+      fechas.push({
+        fecha: d.toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit" }),
+        golesA: null,
+        golesB: null
+      });
     }
     d.setDate(d.getDate() + 1);
   }
@@ -71,9 +73,10 @@ function generarFechas() {
 }
 
 function normalizarJugador(j) {
-  if (typeof j === "string") return { nombre: j, altura: "-", nacimiento: "-", foto: "", dorsal: "", escudo: "" };
+  if (typeof j === "string") return { nombre: j, apodo: "", altura: "-", nacimiento: "-", foto: "", dorsal: "", escudo: "" };
   return {
     nombre:     j?.nombre     || "-",
+    apodo:      j?.apodo      || "",
     altura:     j?.altura     || "-",
     nacimiento: j?.nacimiento || "-",
     foto:       j?.foto       || "",
@@ -95,14 +98,21 @@ function updateAdminUI() {
 /* ── DOT DE CLUB ──────────────────────────────────── */
 function clubDotHTML(escudo) {
   if (!escudo) return "";
-  if (escudo === "River Plate") {
-    return `<span class="jugador-club-dot dot-river" title="River Plate"></span>`;
-  }
-  if (escudo === "Boca Juniors") {
-    return `<span class="jugador-club-dot dot-boca" title="Boca Juniors"></span>`;
-  }
+  if (escudo === "River Plate")  return `<span class="jugador-club-dot dot-river" title="River Plate"></span>`;
+  if (escudo === "Boca Juniors") return `<span class="jugador-club-dot dot-boca"  title="Boca Juniors"></span>`;
   const color = CLUB_COLORS[escudo] || "rgba(255,255,255,0.3)";
   return `<span class="jugador-club-dot" style="background:${color}" title="${escudo}"></span>`;
+}
+
+/* ── BUSCAR JUGADOR POR NOMBRE ────────────────────── */
+function buscarJugadorPorNombre(nombre) {
+  for (const eq of ["A", "B"]) {
+    const idx = (planteles[eq] || []).findIndex(
+      j => j.nombre.trim().toLowerCase() === nombre.trim().toLowerCase()
+    );
+    if (idx !== -1) return { equipo: eq, index: idx };
+  }
+  return null;
 }
 
 /* ── FIFA CARD STYLES ─────────────────────────────── */
@@ -149,8 +159,8 @@ function clubDotHTML(escudo) {
       -webkit-transform-style: preserve-3d;
       transform-style: preserve-3d;
       will-change: transform;
-      -webkit-animation: cartaFlip 0.72s cubic-bezier(0.4, 0, 0.2, 1) 0.08s both;
-      animation: cartaFlip 0.72s cubic-bezier(0.4, 0, 0.2, 1) 0.08s both;
+      -webkit-animation: cartaFlip 1.1s cubic-bezier(0.4, 0, 0.2, 1) 0.08s both;
+      animation: cartaFlip 1.1s cubic-bezier(0.4, 0, 0.2, 1) 0.08s both;
     }
 
     @-webkit-keyframes cartaFlip {
@@ -277,7 +287,6 @@ function clubDotHTML(escudo) {
       );
     }
 
-    /* Barra dorada para capitán en la FIFA card */
     .fcard-accent-bar.capitan {
       background: linear-gradient(
         90deg,
@@ -330,15 +339,11 @@ function clubDotHTML(escudo) {
       border: 1px solid rgba(255,255,255,0.1);
       overflow: hidden;
     }
-    .fcard-escudo-box img {
-      width: 32px; height: 32px;
-      object-fit: contain;
-    }
+    .fcard-escudo-box img { width: 32px; height: 32px; object-fit: contain; }
     .fcard-escudo-fallback {
       font-size: 8px; font-weight: 800;
       color: rgba(255,255,255,0.6);
-      text-align: center; letter-spacing: 0.5px;
-      padding: 2px;
+      text-align: center; letter-spacing: 0.5px; padding: 2px;
     }
 
     .fcard-photo-wrap {
@@ -356,10 +361,7 @@ function clubDotHTML(escudo) {
       object-position: top center;
       filter: grayscale(15%) contrast(1.05);
     }
-    .fcard-silhouette {
-      width: 100px; height: 165px;
-      opacity: 0.15;
-    }
+    .fcard-silhouette { width: 100px; height: 165px; opacity: 0.15; }
 
     .fcard-bottom {
       background: linear-gradient(to bottom, #0f172a, #020617);
@@ -373,8 +375,10 @@ function clubDotHTML(escudo) {
       margin-bottom: 12px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-    .fcard-nombre {
-      font-size: 19px;
+
+    /* Apodo — grande, protagonista */
+    .fcard-apodo {
+      font-size: 20px;
       font-weight: 900;
       color: #f1f5f9;
       text-transform: uppercase;
@@ -382,6 +386,16 @@ function clubDotHTML(escudo) {
       line-height: 1.15;
       font-family: 'Segoe UI', Arial, sans-serif;
     }
+
+    /* Nombre completo — debajo del apodo, más discreto */
+    .fcard-nombre-completo {
+      font-size: 11px;
+      color: rgba(241,245,249,0.55);
+      font-weight: 500;
+      margin-top: 4px;
+      letter-spacing: 0.3px;
+    }
+
     .fcard-sub {
       font-size: 10px;
       color: rgba(239,68,68,0.7);
@@ -404,18 +418,11 @@ function clubDotHTML(escudo) {
       text-align: center;
     }
     .fcard-stat-label {
-      font-size: 8px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: #ef4444;
-      margin-bottom: 4px;
+      font-size: 8px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: #ef4444; margin-bottom: 4px;
     }
-    .fcard-stat-val {
-      font-size: 13px;
-      font-weight: 700;
-      color: #f1f5f9;
-    }
+    .fcard-stat-val { font-size: 13px; font-weight: 700; color: #f1f5f9; }
 
     .fcard-footer {
       text-align: center;
@@ -468,18 +475,18 @@ function clubDotHTML(escudo) {
       font-family: inherit;
     }
     .fcard-admin input:focus { border-color: #ef4444; }
-    .fcard-admin .admin-btns {
-      display: flex;
-      gap: 8px;
-    }
+    .fcard-admin .admin-btns { display: flex; gap: 8px; }
     .fcard-admin .admin-btns button { flex: 1; font-size: 0.78rem; padding: 8px 6px; }
 
+    /* Jugador de la fecha — clickeable */
+    #jugadorTexto {
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+    #jugadorTexto:hover { color: #ef4444; }
+
     @media (max-width: 480px) {
-      .fifa-card-wrap {
-        max-height: 90vh;
-        overflow-y: auto;
-        border-radius: 20px;
-      }
+      .fifa-card-wrap { max-height: 90vh; overflow-y: auto; border-radius: 20px; }
     }
   `;
   document.head.appendChild(style);
@@ -499,10 +506,12 @@ window.abrirJugador = (j, index, equipo, esCapitan = false) => {
   const isAdmin    = window.admin === true;
   const escudoPath = ESCUDOS[j.escudo] || "";
   const fotoPath   = j.foto || "";
+  const apodoMostrar = j.apodo || j.nombre; // fallback al nombre si no hay apodo
 
   const adminHTML = isAdmin ? `
     <div class="fcard-admin">
-      <input id="editNombre"     value="${j.nombre}"     placeholder="Nombre">
+      <input id="editNombre"     value="${j.nombre}"     placeholder="Nombre completo">
+      <input id="editApodo"      value="${j.apodo}"      placeholder="Apodo / Nickname">
       <input id="editAltura"     value="${j.altura}"     placeholder="Altura (ej: 1.75)">
       <input id="editNacimiento" value="${j.nacimiento}" placeholder="Nacimiento (dd/mm/aaaa)">
       <input id="editDorsal"     value="${j.dorsal}"     placeholder="Dorsal (ej: 10)">
@@ -540,7 +549,8 @@ window.abrirJugador = (j, index, equipo, esCapitan = false) => {
           </div>
           <div class="fcard-bottom">
             <div class="fcard-nombre-box">
-              <div class="fcard-nombre">${j.nombre}</div>
+              <div class="fcard-apodo">${apodoMostrar}</div>
+              <div class="fcard-nombre-completo">${j.nombre}</div>
               <div class="fcard-sub">${j.escudo || "Fútbol Viércoles"}</div>
             </div>
             <div class="fcard-stats">
@@ -577,9 +587,7 @@ window.abrirJugador = (j, index, equipo, esCapitan = false) => {
     flipInner.classList.add("animacion-completa");
   }, { once: true });
 
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => modal.classList.add("activo"));
-  });
+  requestAnimationFrame(() => requestAnimationFrame(() => modal.classList.add("activo")));
 
   // Escudo
   const escudoBox = modal.querySelector("#fcEscudo");
@@ -609,8 +617,7 @@ window.abrirJugador = (j, index, equipo, esCapitan = false) => {
 };
 
 window.abrirJugadorIndex = (equipo, index) => {
-  const esCapitan = index === 0;
-  abrirJugador(planteles[equipo][index], index, equipo, esCapitan);
+  abrirJugador(planteles[equipo][index], index, equipo, index === 0);
 };
 
 document.addEventListener("click", e => {
@@ -622,7 +629,7 @@ document.addEventListener("click", e => {
 function cargarDatos() {
   onSnapshot(DB_DOC, snap => {
     if (snap.exists()) {
-      const data  = snap.data();
+      const data = snap.data();
       datos     = data.partidos  || generarFechas();
       jugadores = data.jugadores || new Array(datos.length).fill("");
       planteles = data.planteles || { A: [], B: [] };
@@ -684,20 +691,15 @@ modalLogin.addEventListener("click", e => {
 
 /* ── NAVEGACIÓN ───────────────────────────────────── */
 window.mostrarSeccion = (id) => {
-  const secciones = document.querySelectorAll(".seccion");
-
   document.querySelectorAll(".nav-btn[data-section]").forEach(btn => {
     btn.classList.toggle("active-nav", btn.dataset.section === id);
   });
 
-  secciones.forEach(sec => {
+  document.querySelectorAll(".seccion").forEach(sec => {
     if (sec.classList.contains("activa")) {
       sec.classList.remove("activa");
       sec.classList.add("saliendo");
-      setTimeout(() => {
-        sec.classList.remove("saliendo");
-        sec.style.display = "none";
-      }, 400);
+      setTimeout(() => { sec.classList.remove("saliendo"); sec.style.display = "none"; }, 400);
     } else {
       sec.style.display = "none";
     }
@@ -740,13 +742,14 @@ window.editarMVP = (index, nombre) => {
 window.agregarJugador = (equipo) => {
   const nombre = prompt("Nombre completo");
   if (!nombre) return;
+  const apodo      = prompt("Apodo / Nickname (dejar vacío si no tiene)") || "";
   const dorsal     = prompt("Dorsal (número de camiseta)") || "";
   const altura     = prompt("Altura (ej: 1.75)") || "-";
   const nacimiento = prompt("Fecha de nacimiento (dd/mm/aaaa)") || "-";
   const escudo     = prompt("Club (ej: River Plate, Boca Juniors, Independiente...)") || "";
   const foto       = "";
   if (!planteles[equipo]) planteles[equipo] = [];
-  planteles[equipo].push({ nombre, dorsal, altura, nacimiento, escudo, foto });
+  planteles[equipo].push({ nombre, apodo, dorsal, altura, nacimiento, escudo, foto });
   guardar();
   renderPlanteles();
 };
@@ -762,6 +765,7 @@ window.eliminarJugador = (equipo, index) => {
 window.guardarEdicionJugador = (equipo, index) => {
   planteles[equipo][index] = {
     nombre:     $("editNombre").value.trim(),
+    apodo:      $("editApodo").value.trim(),
     altura:     $("editAltura").value.trim(),
     nacimiento: $("editNacimiento").value.trim(),
     dorsal:     $("editDorsal").value.trim(),
@@ -804,12 +808,9 @@ function renderAll() {
 
 function renderPartidos() {
   let html = `
-    <thead>
-      <tr>
-        <th>#</th><th>Día</th><th>Resultado</th><th>${window.admin ? "Cargar" : ""}</th>
-      </tr>
-    </thead>
-    <tbody>
+    <thead><tr>
+      <th>#</th><th>Día</th><th>Resultado</th><th>${window.admin ? "Cargar" : ""}</th>
+    </tr></thead><tbody>
   `;
   datos.forEach((p, i) => {
     let res = `<span style="color:var(--text-muted)">Sin jugar</span>`;
@@ -829,8 +830,7 @@ function renderPartidos() {
           <input id="b${i}" type="number" min="0" max="99" placeholder="${p.golesB ?? ""}">
           <button onclick="guardarResultado(${i})">OK</button>
         ` : ""}</td>
-      </tr>
-    `;
+      </tr>`;
   });
   html += "</tbody>";
   partidosEl.innerHTML = html;
@@ -848,7 +848,7 @@ function renderTabla() {
     equipos[1].gf += p.golesB; equipos[1].gc += p.golesA;
     if      (p.golesA > p.golesB) { equipos[0].pts += 3; equipos[0].pg++; equipos[1].pp++; }
     else if (p.golesB > p.golesA) { equipos[1].pts += 3; equipos[1].pg++; equipos[0].pp++; }
-    else                          { equipos[0].pts += 1; equipos[1].pts += 1; equipos[0].pe++; equipos[1].pe++; }
+    else { equipos[0].pts++; equipos[1].pts++; equipos[0].pe++; equipos[1].pe++; }
   });
   equipos.forEach(e => e.gd = e.gf - e.gc);
   equipos.sort((a, b) => b.pts !== a.pts ? b.pts - a.pts : b.gd - a.gd);
@@ -872,7 +872,28 @@ function renderTabla() {
 function renderInfo() {
   const index = datos.findLastIndex(p => p.golesA != null);
   fechaActualEl.textContent = index >= 0 ? "Fecha " + (index + 1) : "-";
-  jugadorTextoEl.innerHTML  = `<strong>${jugadores[index] || "-"}</strong>`;
+
+  const nombreMVP = jugadores[index] || "-";
+
+  // Mostrar apodo si existe, si no el nombre
+  let displayMVP = nombreMVP;
+  if (nombreMVP !== "-") {
+    const encontrado = buscarJugadorPorNombre(nombreMVP);
+    if (encontrado) {
+      const j = planteles[encontrado.equipo][encontrado.index];
+      displayMVP = j.apodo || j.nombre;
+    }
+  }
+
+  jugadorTextoEl.innerHTML = `<strong>${displayMVP}</strong>`;
+
+  // Click en jugador de la fecha → abre su FIFA card
+  jugadorTextoEl.onclick = () => {
+    if (nombreMVP === "-") return;
+    const encontrado = buscarJugadorPorNombre(nombreMVP);
+    if (encontrado) abrirJugadorIndex(encontrado.equipo, encontrado.index);
+  };
+
   adminJugadorEl.style.display = window.admin ? "flex" : "none";
 }
 
@@ -885,8 +906,7 @@ function renderHistorial() {
         : `<span style="color:var(--text-muted)">Sin jugar</span>`}
       <br>
       MVP: ${window.admin
-        ? `<input type="text" value="${jugadores[i] || ""}" placeholder="Nombre MVP"
-             onchange="editarMVP(${i}, this.value)">`
+        ? `<input type="text" value="${jugadores[i] || ""}" placeholder="Nombre MVP" onchange="editarMVP(${i}, this.value)">`
         : `<strong>${jugadores[i] || "–"}</strong>`}
     </div>
   `).join("");
@@ -915,15 +935,15 @@ function renderPlanteles() {
     const lista = eq === "A" ? listaA : listaB;
     lista.innerHTML = (planteles[eq] || []).map((j, i) => {
       const esCapitan = i === 0;
+      const subtitulo = esCapitan
+        ? `<div class="capitan-badge">Capitán</div>`
+        : `<div>${j.apodo ? j.apodo : (j.altura !== "-" ? j.altura : "")}</div>`;
       return `
         <div class="card jugador-card${esCapitan ? " capitan" : ""}" data-equipo="${eq}" data-index="${i}">
           <img src="${avatarUrl(j.foto)}" alt="${j.nombre}" onerror="this.src='${avatarUrl('')}'">
           <div style="flex:1">
             <strong>${j.nombre}</strong>
-            ${esCapitan
-              ? `<div class="capitan-badge">Capitán</div>`
-              : `<div>${j.altura !== "-" ? "📏 " + j.altura : ""}</div>`
-            }
+            ${subtitulo}
           </div>
           ${j.dorsal ? `<span style="font-size:13px;font-weight:700;color:var(--accent);margin-right:4px">#${j.dorsal}</span>` : ""}
           ${clubDotHTML(j.escudo)}
