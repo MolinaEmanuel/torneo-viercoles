@@ -141,17 +141,7 @@ document.querySelector(".logo-principal")?.addEventListener("click", () => {
   mostrarSeccion("inicio");
 });
 
-/* ── LOGO CONMEBOL: activar hover después de la animación de entrada ── */
-const logoConmebol = document.querySelector(".logo-secundario");
-if (logoConmebol) {
-  logoConmebol.addEventListener("animationend", () => {
-    logoConmebol.classList.add("listo");
-  }, { once: true });
-}
-
 /* ── SVG TROFEOS ──────────────────────────────────── */
-
-// Apertura → AZUL (era rojo, ahora azul/índigo)
 function svgCopaApertura() {
   return `<svg width="100" height="120" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect x="32" y="108" width="36" height="7" rx="3" fill="url(#baseA)"/>
@@ -189,7 +179,6 @@ function svgCopaApertura() {
   </svg>`;
 }
 
-// Clausura → ROJO (era azul, ahora rojo)
 function svgCopaClausura() {
   return `<svg width="100" height="120" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect x="32" y="108" width="36" height="7" rx="3" fill="url(#baseC)"/>
@@ -323,7 +312,6 @@ function svgSupercopa() {
     .fcard-nombre-box { text-align:center; padding-bottom:12px; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.06); }
     .fcard-apodo { font-size:20px; font-weight:900; color:#f1f5f9; text-transform:uppercase; letter-spacing:0.5px; line-height:1.15; font-family:'Segoe UI',Arial,sans-serif; }
     .fcard-nombre-completo { font-size:11px; color:rgba(241,245,249,0.55); font-weight:500; margin-top:4px; letter-spacing:0.3px; }
-    .fcard-capitan-label { font-size:9px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:#f59e0b; margin-top:5px; }
     .fcard-sub { font-size:10px; color:rgba(239,68,68,0.7); font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-top:3px; }
     .fcard-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
     .fcard-stat { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:8px 10px; text-align:center; }
@@ -401,7 +389,6 @@ window.abrirJugador = (j, index, equipo, esCapitan = false) => {
             <div class="fcard-nombre-box">
               <div class="fcard-apodo">${apodoMostrar}</div>
               <div class="fcard-nombre-completo">${j.nombre}</div>
-              ${esCapitan ? `<div class="fcard-capitan-label">Capitán</div>` : ""}
               <div class="fcard-sub">${j.escudo || "Fútbol Viércoles"}</div>
             </div>
             <div class="fcard-stats">
@@ -712,34 +699,45 @@ function renderRanking() {
 
 /* ── PLANTELES ────────────────────────────────────── */
 function renderPlanteles() {
-  const isAdmin = window.admin===true;
-  ["A","B"].forEach(eq=>{
-    const lista = eq==="A"?listaA:listaB;
-    lista.innerHTML=`<div class="equipo-lista-inner">${
-      (planteles[eq]||[]).map((j,i)=>{
-        const esCapitan=i===0;
-        const reorderHTML=isAdmin?`
+  const isAdmin = window.admin === true;
+  ["A","B"].forEach(eq => {
+    const lista = eq === "A" ? listaA : listaB;
+    lista.innerHTML = `<div class="equipo-lista-inner">${
+      (planteles[eq] || []).map((j, i) => {
+        const esCapitan = i === 0;
+        const apodo     = j.apodo || j.nombre;
+
+        // ── Bloque de texto de la tarjeta ──────────────
+        // Todos los jugadores: apodo (strong) + nombre completo (muted)
+        // Capitán además: badge "Capitán" en tercera línea
+        const textoHTML = `
+          <div style="flex:1">
+            <strong>${apodo}</strong>
+            <div class="jugador-nombre-completo">${j.nombre}</div>
+            ${esCapitan ? `<div class="capitan-badge">Capitán</div>` : ""}
+          </div>`;
+
+        const reorderHTML = isAdmin ? `
           <div class="reorder-btns" onclick="event.stopPropagation()">
             <button onclick="moverJugador('${eq}',${i},-1)">▲</button>
             <button onclick="moverJugador('${eq}',${i},1)">▼</button>
-          </div>`:"";
+          </div>` : "";
+
         return `
-          <div class="card jugador-card${esCapitan?" capitan":""}" data-equipo="${eq}" data-index="${i}">
-            <img src="${avatarUrl(j.foto)}" alt="${j.nombre}" onerror="this.src='${avatarUrl("")}'">
-            <div style="flex:1">
-              <strong>${j.apodo||j.nombre}</strong>
-              ${esCapitan
-                ?`<div class="capitan-badge">Capitán</div>`
-                :`<div style="font-size:0.8rem;color:var(--text-muted)">${j.nombre}</div>`}
-            </div>
-            ${j.dorsal?`<span style="font-size:13px;font-weight:700;color:var(--accent);margin-right:4px">#${j.dorsal}</span>`:""}
+          <div class="card jugador-card${esCapitan ? " capitan" : ""}"
+               data-equipo="${eq}" data-index="${i}">
+            <img src="${avatarUrl(j.foto)}" alt="${apodo}"
+                 onerror="this.src='${avatarUrl("")}'">
+            ${textoHTML}
+            ${j.dorsal ? `<span style="font-size:13px;font-weight:700;color:var(--accent);margin-right:4px">#${j.dorsal}</span>` : ""}
             ${clubDotHTML(j.escudo)}
             ${reorderHTML}
           </div>`;
       }).join("")
     }</div>`;
-    const adminDiv=$("admin"+eq);
-    if(adminDiv) adminDiv.style.display=isAdmin?"flex":"none";
+
+    const adminDiv = $("admin" + eq);
+    if (adminDiv) adminDiv.style.display = isAdmin ? "flex" : "none";
   });
 }
 
@@ -775,11 +773,8 @@ function renderCumples() {
   const sortedDias=Object.keys(cumplesMes).map(Number).sort((a,b)=>a-b);
   const listaHTML=sortedDias.length
     ?sortedDias.map(d=>cumplesMes[d].map(j=>{
-        // Buscar equipo e índice para abrir la FIFA card
         const enc = buscarJugadorPorNombre(j.apodo || j.nombre);
-        const clickAttr = enc
-          ? `onclick="abrirJugadorIndex('${enc.equipo}',${enc.index})"`
-          : "";
+        const clickAttr = enc ? `onclick="abrirJugadorIndex('${enc.equipo}',${enc.index})"` : "";
         return `
           <div class="cumple-item" ${clickAttr}>
             <div class="cumple-item-dia">${d}</div>
