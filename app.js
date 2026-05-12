@@ -157,29 +157,17 @@ document.querySelector(".logo-principal")?.addEventListener("click", () => {
   mostrarSeccion("inicio");
 });
 
-/* ── LOGO CONMEBOL: entrada via JS para no bloquear el hover ── */
+/* ── LOGO CONMEBOL: entrada y hover manejados por JS ── */
 const logoConmebol = document.querySelector(".logo-secundario");
 if (logoConmebol) {
+  logoConmebol.style.transform = "translateX(20px)";
   setTimeout(() => {
     logoConmebol.style.opacity   = "1";
     logoConmebol.style.transform = "translateX(0)";
   }, 300);
 }
 
-/* ── LOGO CONMEBOL: entrada y hover manejados por JS ── */
-const logoConmebol = document.querySelector(".logo-secundario");
-if (logoConmebol) {
-  // Entrada: desliza desde la derecha con fade, sin CSS animation
-  logoConmebol.style.transform = "translateX(20px)";
-  setTimeout(() => {
-    logoConmebol.style.opacity  = "1";
-    logoConmebol.style.transform = "translateX(0)";
-  }, 300);
-}
-
 /* ── SVG TROFEOS ──────────────────────────────────── */
-
-// Apertura → AZUL (era rojo, ahora azul/índigo)
 function svgCopaApertura() {
   return `<svg width="100" height="120" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect x="32" y="108" width="36" height="7" rx="3" fill="url(#baseA)"/>
@@ -217,7 +205,6 @@ function svgCopaApertura() {
   </svg>`;
 }
 
-// Clausura → ROJO (era azul, ahora rojo)
 function svgCopaClausura() {
   return `<svg width="100" height="120" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect x="32" y="108" width="36" height="7" rx="3" fill="url(#baseC)"/>
@@ -746,6 +733,7 @@ function renderPlanteles() {
     lista.innerHTML=`<div class="equipo-lista-inner">${
       (planteles[eq]||[]).map((j,i)=>{
         const esCapitan=i===0;
+        const apodo = j.apodo || j.nombre;
         const reorderHTML=isAdmin?`
           <div class="reorder-btns" onclick="event.stopPropagation()">
             <button onclick="moverJugador('${eq}',${i},-1)">▲</button>
@@ -753,12 +741,11 @@ function renderPlanteles() {
           </div>`:"";
         return `
           <div class="card jugador-card${esCapitan?" capitan":""}" data-equipo="${eq}" data-index="${i}">
-            <img src="${avatarUrl(j.foto)}" alt="${j.nombre}" onerror="this.src='${avatarUrl("")}'">
+            <img src="${avatarUrl(j.foto)}" alt="${apodo}" onerror="this.src='${avatarUrl("")}'">
             <div style="flex:1">
-              <strong>${j.apodo||j.nombre}</strong>
-              ${esCapitan
-                ?`<div class="capitan-badge">Capitán</div>`
-                :`<div style="font-size:0.8rem;color:var(--text-muted)">${j.nombre}</div>`}
+              <strong>${apodo}</strong>
+              <div style="font-size:0.8rem;color:var(--text-muted)">${j.nombre}</div>
+              ${esCapitan ? `<div class="capitan-badge">Capitán</div>` : ""}
             </div>
             ${j.dorsal?`<span style="font-size:13px;font-weight:700;color:var(--accent);margin-right:4px">#${j.dorsal}</span>`:""}
             ${clubDotHTML(j.escudo)}
@@ -803,11 +790,8 @@ function renderCumples() {
   const sortedDias=Object.keys(cumplesMes).map(Number).sort((a,b)=>a-b);
   const listaHTML=sortedDias.length
     ?sortedDias.map(d=>cumplesMes[d].map(j=>{
-        // Buscar equipo e índice para abrir la FIFA card
         const enc = buscarJugadorPorNombre(j.apodo || j.nombre);
-        const clickAttr = enc
-          ? `onclick="abrirJugadorIndex('${enc.equipo}',${enc.index})"`
-          : "";
+        const clickAttr = enc ? `onclick="abrirJugadorIndex('${enc.equipo}',${enc.index})"` : "";
         return `
           <div class="cumple-item" ${clickAttr}>
             <div class="cumple-item-dia">${d}</div>
@@ -869,4 +853,3 @@ function renderPalmares() {
 
 /* ── INIT ─────────────────────────────────────────── */
 cargarDatos();
-
