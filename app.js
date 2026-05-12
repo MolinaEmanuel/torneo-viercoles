@@ -16,10 +16,9 @@ const EQUIPO_B = "Equipo HEBER";
 const PASS     = "cogi2";
 const DB_DOC   = doc(db, "torneo", "datos");
 
-const MESES      = ["Enero","Febrero","Marzo","Abril","Mayo","Junio",
-                    "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const MESES       = ["Enero","Febrero","Marzo","Abril","Mayo","Junio",
+                     "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 const DIAS_SEMANA = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
-
 const EQUIPOS_OPCIONES = ["", EQUIPO_A, EQUIPO_B];
 
 /* ── ESCUDOS ──────────────────────────────────────── */
@@ -62,7 +61,7 @@ let datos     = [];
 let jugadores = [];
 let planteles = { A: [], B: [] };
 let videos    = {};
-let palmares  = {};   // { "2025": { apertura: "Equipo SEBA", clausura: "Equipo HEBER", supercopa: "Equipo HEBER" } }
+let palmares  = {};
 let cumpleMesActual = new Date().getMonth();
 
 /* ── HELPERS ──────────────────────────────────────── */
@@ -137,88 +136,44 @@ function buscarJugadorPorNombre(texto) {
   return null;
 }
 
+/* ── CLICK EN LOGO FV → INICIO ────────────────────── */
+document.querySelector(".logo-principal")?.addEventListener("click", () => {
+  mostrarSeccion("inicio");
+});
+
 /* ── SVG TROFEOS ──────────────────────────────────── */
+
+// Apertura → AZUL (era rojo, ahora azul/índigo)
 function svgCopaApertura() {
   return `<svg width="100" height="120" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <!-- Base -->
     <rect x="32" y="108" width="36" height="7" rx="3" fill="url(#baseA)"/>
     <rect x="27" y="104" width="46" height="6" rx="2" fill="url(#baseA)"/>
-    <!-- Tallo -->
     <rect x="44" y="82" width="12" height="24" rx="3" fill="url(#talloA)"/>
-    <!-- Copa -->
     <path d="M22 18 C22 14 26 10 50 10 C74 10 78 14 78 18 L70 72 C68 78 60 82 50 82 C40 82 32 78 30 72 Z" fill="url(#copaA)"/>
-    <!-- Brillo interior -->
-    <path d="M32 20 C32 17 36 14 50 14 C64 14 68 17 68 20 L62 66 C60 71 56 74 50 74 C44 74 40 71 38 66 Z" fill="url(#brilloA)" opacity="0.35"/>
-    <!-- Asas -->
+    <path d="M32 20 C32 17 36 14 50 14 C64 14 68 17 68 20 L62 66 C60 71 56 74 50 74 C44 74 40 71 38 66 Z" fill="url(#brilloA)" opacity="0.3"/>
     <path d="M22 26 C10 28 6 40 10 52 C12 58 18 62 24 60" stroke="url(#asaA)" stroke-width="5" stroke-linecap="round" fill="none"/>
     <path d="M78 26 C90 28 94 40 90 52 C88 58 82 62 76 60" stroke="url(#asaA)" stroke-width="5" stroke-linecap="round" fill="none"/>
-    <!-- Línea decorativa -->
-    <path d="M36 36 Q50 32 64 36" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-    <path d="M34 48 Q50 44 66 48" stroke="rgba(255,255,255,0.18)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+    <path d="M36 36 Q50 32 64 36" stroke="rgba(255,255,255,0.22)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M34 48 Q50 44 66 48" stroke="rgba(255,255,255,0.15)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
     <defs>
       <linearGradient id="copaA" x1="22" y1="10" x2="78" y2="82" gradientUnits="userSpaceOnUse">
-        <stop offset="0%"   stop-color="#ef4444"/>
-        <stop offset="50%"  stop-color="#dc2626"/>
-        <stop offset="100%" stop-color="#991b1b"/>
+        <stop offset="0%"   stop-color="#818cf8"/>
+        <stop offset="50%"  stop-color="#6366f1"/>
+        <stop offset="100%" stop-color="#4338ca"/>
       </linearGradient>
       <linearGradient id="brilloA" x1="32" y1="14" x2="68" y2="74" gradientUnits="userSpaceOnUse">
         <stop offset="0%"   stop-color="white" stop-opacity="1"/>
         <stop offset="100%" stop-color="white" stop-opacity="0"/>
       </linearGradient>
       <linearGradient id="talloA" x1="44" y1="82" x2="56" y2="106" gradientUnits="userSpaceOnUse">
-        <stop offset="0%"   stop-color="#b91c1c"/>
-        <stop offset="100%" stop-color="#7f1d1d"/>
-      </linearGradient>
-      <linearGradient id="baseA" x1="27" y1="104" x2="73" y2="115" gradientUnits="userSpaceOnUse">
-        <stop offset="0%"   stop-color="#9f1239"/>
-        <stop offset="100%" stop-color="#6b1a1a"/>
-      </linearGradient>
-      <linearGradient id="asaA" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
-        <stop offset="0%"   stop-color="#f87171"/>
-        <stop offset="100%" stop-color="#991b1b"/>
-      </linearGradient>
-    </defs>
-  </svg>`;
-}
-
-function svgCopaClausura() {
-  return `<svg width="100" height="120" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <!-- Base -->
-    <rect x="32" y="108" width="36" height="7" rx="3" fill="url(#baseC)"/>
-    <rect x="27" y="104" width="46" height="6" rx="2" fill="url(#baseC)"/>
-    <!-- Tallo -->
-    <rect x="44" y="82" width="12" height="24" rx="3" fill="url(#talloC)"/>
-    <!-- Copa -->
-    <path d="M22 18 C22 14 26 10 50 10 C74 10 78 14 78 18 L70 72 C68 78 60 82 50 82 C40 82 32 78 30 72 Z" fill="url(#copaC)"/>
-    <!-- Brillo interior -->
-    <path d="M32 20 C32 17 36 14 50 14 C64 14 68 17 68 20 L62 66 C60 71 56 74 50 74 C44 74 40 71 38 66 Z" fill="url(#brilloC)" opacity="0.3"/>
-    <!-- Asas -->
-    <path d="M22 26 C10 28 6 40 10 52 C12 58 18 62 24 60" stroke="url(#asaC)" stroke-width="5" stroke-linecap="round" fill="none"/>
-    <path d="M78 26 C90 28 94 40 90 52 C88 58 82 62 76 60" stroke="url(#asaC)" stroke-width="5" stroke-linecap="round" fill="none"/>
-    <!-- Línea decorativa -->
-    <path d="M36 36 Q50 32 64 36" stroke="rgba(255,255,255,0.22)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-    <path d="M34 48 Q50 44 66 48" stroke="rgba(255,255,255,0.15)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-    <!-- Luna decorativa clausura -->
-    <path d="M44 55 Q50 48 56 55 Q50 62 44 55Z" fill="rgba(255,255,255,0.18)"/>
-    <defs>
-      <linearGradient id="copaC" x1="22" y1="10" x2="78" y2="82" gradientUnits="userSpaceOnUse">
-        <stop offset="0%"   stop-color="#818cf8"/>
-        <stop offset="50%"  stop-color="#6366f1"/>
-        <stop offset="100%" stop-color="#4338ca"/>
-      </linearGradient>
-      <linearGradient id="brilloC" x1="32" y1="14" x2="68" y2="74" gradientUnits="userSpaceOnUse">
-        <stop offset="0%"   stop-color="white" stop-opacity="1"/>
-        <stop offset="100%" stop-color="white" stop-opacity="0"/>
-      </linearGradient>
-      <linearGradient id="talloC" x1="44" y1="82" x2="56" y2="106" gradientUnits="userSpaceOnUse">
         <stop offset="0%"   stop-color="#4338ca"/>
         <stop offset="100%" stop-color="#312e81"/>
       </linearGradient>
-      <linearGradient id="baseC" x1="27" y1="104" x2="73" y2="115" gradientUnits="userSpaceOnUse">
+      <linearGradient id="baseA" x1="27" y1="104" x2="73" y2="115" gradientUnits="userSpaceOnUse">
         <stop offset="0%"   stop-color="#3730a3"/>
         <stop offset="100%" stop-color="#1e1b4b"/>
       </linearGradient>
-      <linearGradient id="asaC" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
+      <linearGradient id="asaA" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
         <stop offset="0%"   stop-color="#a5b4fc"/>
         <stop offset="100%" stop-color="#4338ca"/>
       </linearGradient>
@@ -226,30 +181,59 @@ function svgCopaClausura() {
   </svg>`;
 }
 
+// Clausura → ROJO (era azul, ahora rojo)
+function svgCopaClausura() {
+  return `<svg width="100" height="120" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="32" y="108" width="36" height="7" rx="3" fill="url(#baseC)"/>
+    <rect x="27" y="104" width="46" height="6" rx="2" fill="url(#baseC)"/>
+    <rect x="44" y="82" width="12" height="24" rx="3" fill="url(#talloC)"/>
+    <path d="M22 18 C22 14 26 10 50 10 C74 10 78 14 78 18 L70 72 C68 78 60 82 50 82 C40 82 32 78 30 72 Z" fill="url(#copaC)"/>
+    <path d="M32 20 C32 17 36 14 50 14 C64 14 68 17 68 20 L62 66 C60 71 56 74 50 74 C44 74 40 71 38 66 Z" fill="url(#brilloC)" opacity="0.35"/>
+    <path d="M22 26 C10 28 6 40 10 52 C12 58 18 62 24 60" stroke="url(#asaC)" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <path d="M78 26 C90 28 94 40 90 52 C88 58 82 62 76 60" stroke="url(#asaC)" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <path d="M36 36 Q50 32 64 36" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M34 48 Q50 44 66 48" stroke="rgba(255,255,255,0.18)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+    <defs>
+      <linearGradient id="copaC" x1="22" y1="10" x2="78" y2="82" gradientUnits="userSpaceOnUse">
+        <stop offset="0%"   stop-color="#ef4444"/>
+        <stop offset="50%"  stop-color="#dc2626"/>
+        <stop offset="100%" stop-color="#991b1b"/>
+      </linearGradient>
+      <linearGradient id="brilloC" x1="32" y1="14" x2="68" y2="74" gradientUnits="userSpaceOnUse">
+        <stop offset="0%"   stop-color="white" stop-opacity="1"/>
+        <stop offset="100%" stop-color="white" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="talloC" x1="44" y1="82" x2="56" y2="106" gradientUnits="userSpaceOnUse">
+        <stop offset="0%"   stop-color="#b91c1c"/>
+        <stop offset="100%" stop-color="#7f1d1d"/>
+      </linearGradient>
+      <linearGradient id="baseC" x1="27" y1="104" x2="73" y2="115" gradientUnits="userSpaceOnUse">
+        <stop offset="0%"   stop-color="#9f1239"/>
+        <stop offset="100%" stop-color="#6b1a1a"/>
+      </linearGradient>
+      <linearGradient id="asaC" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
+        <stop offset="0%"   stop-color="#f87171"/>
+        <stop offset="100%" stop-color="#991b1b"/>
+      </linearGradient>
+    </defs>
+  </svg>`;
+}
+
 function svgSupercopa() {
   return `<svg width="120" height="148" viewBox="0 0 120 148" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <!-- Base doble -->
     <rect x="36" y="136" width="48" height="8" rx="3.5" fill="url(#baseS2)"/>
     <rect x="30" y="128" width="60" height="10" rx="3" fill="url(#baseS1)"/>
-    <!-- Tallo -->
     <rect x="52" y="98" width="16" height="32" rx="4" fill="url(#talloS)"/>
-    <!-- Copa principal -->
     <path d="M18 20 C18 14 24 8 60 8 C96 8 102 14 102 20 L92 86 C89 95 74 100 60 100 C46 100 31 95 28 86 Z" fill="url(#copaS)"/>
-    <!-- Brillo -->
     <path d="M30 22 C30 17 36 12 60 12 C84 12 90 17 90 22 L82 80 C80 88 72 92 60 92 C48 92 40 88 38 80 Z" fill="url(#brilloS)" opacity="0.28"/>
-    <!-- Asas decoradas -->
     <path d="M18 30 C2 33 -2 52 4 68 C7 76 16 82 24 79" stroke="url(#asaS)" stroke-width="7" stroke-linecap="round" fill="none"/>
     <path d="M102 30 C118 33 122 52 116 68 C113 76 104 82 96 79" stroke="url(#asaS)" stroke-width="7" stroke-linecap="round" fill="none"/>
-    <!-- Nudo de asas -->
     <circle cx="21" cy="30" r="5" fill="url(#nudoS)"/>
     <circle cx="99" cy="30" r="5" fill="url(#nudoS)"/>
-    <!-- Líneas decorativas -->
     <path d="M40 42 Q60 36 80 42" stroke="rgba(255,255,255,0.28)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
     <path d="M38 58 Q60 52 82 58" stroke="rgba(255,255,255,0.2)"  stroke-width="1.5" fill="none" stroke-linecap="round"/>
     <path d="M38 74 Q60 68 82 74" stroke="rgba(255,255,255,0.13)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-    <!-- Estrella central -->
-    <path d="M60 30 L62.4 37.3 L70 37.3 L64 41.8 L66.4 49.1 L60 44.6 L53.6 49.1 L56 41.8 L50 37.3 L57.6 37.3 Z"
-          fill="url(#estrellaS)" filter="url(#glow)"/>
+    <path d="M60 30 L62.4 37.3 L70 37.3 L64 41.8 L66.4 49.1 L60 44.6 L53.6 49.1 L56 41.8 L50 37.3 L57.6 37.3 Z" fill="url(#estrellaS)" filter="url(#glow)"/>
     <defs>
       <linearGradient id="copaS" x1="18" y1="8" x2="102" y2="100" gradientUnits="userSpaceOnUse">
         <stop offset="0%"   stop-color="#fde68a"/>
@@ -331,6 +315,7 @@ function svgSupercopa() {
     .fcard-nombre-box { text-align:center; padding-bottom:12px; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.06); }
     .fcard-apodo { font-size:20px; font-weight:900; color:#f1f5f9; text-transform:uppercase; letter-spacing:0.5px; line-height:1.15; font-family:'Segoe UI',Arial,sans-serif; }
     .fcard-nombre-completo { font-size:11px; color:rgba(241,245,249,0.55); font-weight:500; margin-top:4px; letter-spacing:0.3px; }
+    .fcard-capitan-label { font-size:9px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:#f59e0b; margin-top:5px; }
     .fcard-sub { font-size:10px; color:rgba(239,68,68,0.7); font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-top:3px; }
     .fcard-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
     .fcard-stat { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:8px 10px; text-align:center; }
@@ -408,6 +393,7 @@ window.abrirJugador = (j, index, equipo, esCapitan = false) => {
             <div class="fcard-nombre-box">
               <div class="fcard-apodo">${apodoMostrar}</div>
               <div class="fcard-nombre-completo">${j.nombre}</div>
+              ${esCapitan ? `<div class="fcard-capitan-label">Capitán</div>` : ""}
               <div class="fcard-sub">${j.escudo || "Fútbol Viércoles"}</div>
             </div>
             <div class="fcard-stats">
@@ -510,7 +496,7 @@ passwordInput.addEventListener("keydown", e => { if (e.key === "Enter") window.v
 modalLogin.addEventListener("click", e => { if (e.target === modalLogin) modalLogin.style.display = "none"; });
 
 /* ── NAVEGACIÓN ───────────────────────────────────── */
-window.mostrarSeccion = (id) => {
+function mostrarSeccion(id) {
   document.querySelectorAll(".nav-btn[data-section]").forEach(btn => btn.classList.toggle("active-nav", btn.dataset.section === id));
   document.querySelectorAll(".seccion").forEach(sec => {
     if (sec.classList.contains("activa")) {
@@ -520,7 +506,8 @@ window.mostrarSeccion = (id) => {
   });
   const nueva = $(id);
   setTimeout(() => { nueva.style.display = "block"; setTimeout(() => nueva.classList.add("activa"), 50); }, 400);
-};
+}
+window.mostrarSeccion = mostrarSeccion;
 
 /* ── RESULTADOS ───────────────────────────────────── */
 window.guardarResultado = (i) => {
@@ -577,7 +564,6 @@ window.moverJugador = (equipo, index, dir) => {
   [arr[index], arr[dest]] = [arr[dest], arr[index]];
   guardar(); renderPlanteles();
 };
-
 function toggleEquipo(eq) {
   const lista = $("lista"+eq), titulo = $("title"+eq);
   const abierto = lista.classList.contains("abierto");
@@ -587,15 +573,13 @@ function toggleEquipo(eq) {
 }
 window.toggleEquipo = toggleEquipo;
 
-/* ── PALMARES: GUARDAR ────────────────────────────── */
+/* ── PALMARÉS ─────────────────────────────────────── */
 window.guardarTrofeo = (anio, tipo) => {
-  const sel = $(`sel-${anio}-${tipo}`);
-  if (!sel) return;
+  const sel = $(`sel-${anio}-${tipo}`); if (!sel) return;
   if (!palmares[anio]) palmares[anio] = {};
   palmares[anio][tipo] = sel.value;
   guardar(); renderPalmares();
 };
-
 window.agregarAnio = () => {
   const anio = prompt("Ingresá el año (ej: 2024)");
   if (!anio || isNaN(anio)) return;
@@ -760,11 +744,13 @@ function renderCumples() {
     const p=parsearNacimiento(j.nacimiento);
     if(p&&p.mes===mes){if(!cumplesMes[p.dia])cumplesMes[p.dia]=[];cumplesMes[p.dia].push(j);}
   });
+
   const navHTML=`<div class="cumple-nav">
     <button onclick="cambiarMesCumple(-1)">◀</button>
     <span class="cumple-mes-label">${MESES[mes]} ${anio}</span>
     <button onclick="cambiarMesCumple(1)">▶</button>
   </div>`;
+
   const primerDia=new Date(anio,mes,1).getDay(), diasEnMes=new Date(anio,mes+1,0).getDate();
   let gridHTML=DIAS_SEMANA.map(d=>`<div class="cumple-dia-header">${d}</div>`).join("");
   for(let v=0;v<primerDia;v++) gridHTML+=`<div class="cumple-dia vacio"></div>`;
@@ -777,17 +763,26 @@ function renderCumples() {
       ${tieneCumple?`<span class="cumple-tooltip">🎂 ${nombres}</span>`:""}
     </div>`;
   }
+
   const sortedDias=Object.keys(cumplesMes).map(Number).sort((a,b)=>a-b);
   const listaHTML=sortedDias.length
-    ?sortedDias.map(d=>cumplesMes[d].map(j=>`
-      <div class="cumple-item">
-        <div class="cumple-item-dia">${d}</div>
-        <div class="cumple-item-nombre">
-          <strong>${j.apodo||j.nombre}</strong>
-          <span>${j.nombre}</span>
-        </div>
-      </div>`).join("")).join("")
+    ?sortedDias.map(d=>cumplesMes[d].map(j=>{
+        // Buscar equipo e índice para abrir la FIFA card
+        const enc = buscarJugadorPorNombre(j.apodo || j.nombre);
+        const clickAttr = enc
+          ? `onclick="abrirJugadorIndex('${enc.equipo}',${enc.index})"`
+          : "";
+        return `
+          <div class="cumple-item" ${clickAttr}>
+            <div class="cumple-item-dia">${d}</div>
+            <div class="cumple-item-nombre">
+              <strong>${j.apodo||j.nombre}</strong>
+              <span>${j.nombre}</span>
+            </div>
+          </div>`;
+      }).join("")).join("")
     :`<div class="cumple-empty">No hay cumpleaños en ${MESES[mes]}.</div>`;
+
   cumpleEl.innerHTML=`${navHTML}<div class="cumple-grid">${gridHTML}</div><div class="cumple-lista">${listaHTML}</div>`;
 }
 window.cambiarMesCumple=(dir)=>{cumpleMesActual=(cumpleMesActual+dir+12)%12;renderCumples();};
@@ -795,11 +790,7 @@ window.cambiarMesCumple=(dir)=>{cumpleMesActual=(cumpleMesActual+dir+12)%12;rend
 /* ── PALMARÉS ─────────────────────────────────────── */
 function renderPalmares() {
   const isAdmin = window.admin === true;
-  const anios   = Object.keys(palmares).sort((a,b) => b - a); // más reciente primero
-
-  const opcionesHTML = EQUIPOS_OPCIONES.map(e =>
-    `<option value="${e}">${e || "— Sin asignar —"}</option>`
-  ).join("");
+  const anios   = Object.keys(palmares).sort((a,b) => b - a);
 
   const trofeoHTML = (anio, tipo, svgFn, clase, label) => {
     const ganador = palmares[anio]?.[tipo] || "";
@@ -809,7 +800,6 @@ function renderPalmares() {
           ${EQUIPOS_OPCIONES.map(e=>`<option value="${e}" ${e===ganador?"selected":""}>${e||"— Sin asignar —"}</option>`).join("")}
         </select>
       </div>` : "";
-
     return `
       <div class="trofeo-card ${clase}">
         <div class="trofeo-svg-wrap">${svgFn()}</div>
@@ -823,16 +813,14 @@ function renderPalmares() {
     <div class="palmares-anio">
       <div class="palmares-anio-titulo">${anio}</div>
       <div class="palmares-trofeos">
-        ${trofeoHTML(anio, "apertura",  svgCopaApertura,  "apertura",  "Apertura " + anio)}
-        ${trofeoHTML(anio, "supercopa", svgSupercopa,     "supercopa", "Supercopa " + anio)}
-        ${trofeoHTML(anio, "clausura",  svgCopaClausura,  "clausura",  "Clausura " + anio)}
+        ${trofeoHTML(anio,"apertura", svgCopaApertura, "apertura", "Apertura "+anio)}
+        ${trofeoHTML(anio,"supercopa",svgSupercopa,    "supercopa","Supercopa "+anio)}
+        ${trofeoHTML(anio,"clausura", svgCopaClausura, "clausura", "Clausura "+anio)}
       </div>
     </div>`).join("");
 
   const btnNuevoAnio = isAdmin
-    ? `<div class="palmares-nuevo-anio visible">
-        <button onclick="agregarAnio()">+ Agregar año</button>
-       </div>`
+    ? `<div class="palmares-nuevo-anio visible"><button onclick="agregarAnio()">+ Agregar año</button></div>`
     : "";
 
   palmaresEl.innerHTML = `
