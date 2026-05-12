@@ -76,20 +76,14 @@ main, .topbar, .header {
 .header-center { text-align: center; animation: fadeIn 0.8s ease; }
 .header-right { position: absolute; right: 20px; }
 
-/* ── LOGO CONMEBOL — igual animación que el logo FV ── */
 .logo-secundario {
   height: 60px;
   opacity: 0;
   transform: translateX(20px);
   animation: slideInRight 0.6s ease forwards;
-  /* transition separado para el hover, no interfiere con la animación de entrada */
-  transition: transform 0.25s ease, filter 0.25s ease;
-  cursor: pointer;
+  transition: transform var(--transition);
 }
-.logo-secundario:hover {
-  transform: scale(1.15) rotate(2deg);
-  filter: drop-shadow(0 0 14px rgba(239,68,68,0.4));
-}
+.logo-secundario:hover { transform: scale(1.08) rotate(2deg); }
 
 /* =============================================
    TYPOGRAPHY
@@ -126,6 +120,7 @@ button:active { transform: scale(0.96); }
 .btn-secondary { background: var(--bg-card-2); border: 1px solid var(--border); }
 .btn-secondary:hover { background: #2d3f55; box-shadow: none; }
 
+/* Admin y logout: mismo estilo discreto */
 .btn-admin  { background: #334155; border: 1px solid rgba(255,255,255,0.08); }
 .btn-admin:hover  { background: #3f5068; box-shadow: 0 8px 20px rgba(0,0,0,0.35); }
 
@@ -201,27 +196,7 @@ input:focus { border-color: var(--accent); }
 .jugador-card strong { display: block; font-size: 0.95rem; margin-bottom: 3px; }
 .jugador-card.capitan { border-left: 4px solid #f59e0b; background: linear-gradient(145deg,#0f172a,#1c2340); }
 .jugador-card.capitan:hover { box-shadow: 0 10px 30px rgba(245,158,11,0.25); }
-
-/* Nombre completo — segunda línea, igual tipografía que los demás */
-.jugador-nombre-completo {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin-top: 1px;
-}
-
-/* Badge capitán — tercera línea */
-.capitan-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: #f59e0b;
-  margin-top: 4px;
-}
-
+.capitan-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 0.65rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #f59e0b; margin-top: 4px; }
 .reorder-btns { display: flex; flex-direction: column; gap: 3px; margin-left: 4px; }
 .reorder-btns button { padding: 2px 7px; font-size: 0.75rem; line-height: 1; background: rgba(255,255,255,0.08); border: 1px solid var(--border); border-radius: 4px; color: var(--text-muted); transition: background var(--transition), color var(--transition); }
 .reorder-btns button:hover { background: var(--accent); color: white; transform: none; box-shadow: none; }
