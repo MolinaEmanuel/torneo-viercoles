@@ -14,6 +14,33 @@
   --radius:      14px;
   --radius-sm:   8px;
   --transition:  0.25s ease;
+
+  /* Tema claro — se activa con body.tema-claro */
+  --bg-deep-light:    #f1f5f9;
+  --bg-card-light:    #ffffff;
+  --bg-card-2-light:  #e2e8f0;
+  --text-light:       #0f172a;
+  --text-muted-light: rgba(15,23,42,0.55);
+  --border-light:     rgba(15,23,42,0.1);
+}
+
+body.tema-claro {
+  --bg-deep:    var(--bg-deep-light);
+  --bg-card:    var(--bg-card-light);
+  --bg-card-2:  var(--bg-card-2-light);
+  --text:       var(--text-light);
+  --text-muted: var(--text-muted-light);
+  --border:     var(--border-light);
+  --shadow:     rgba(0,0,0,0.12);
+}
+
+/* Transición suave al cambiar de tema */
+body {
+  transition: background 0.35s ease, color 0.35s ease;
+}
+
+body.tema-claro {
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -319,6 +346,111 @@ main { position: relative; padding-top: 10px; }
 }
 .trofeo-card.supercopa .trofeo-svg-wrap { animation: trofeoGlow 3s ease-in-out infinite; }
 
+/* ── BOTÓN TEMA ── */
+.btn-tema {
+  background: transparent;
+  border: 1px solid var(--border);
+  font-size: 1rem;
+  padding: 7px 10px;
+  line-height: 1;
+}
+.btn-tema:hover {
+  background: rgba(239,68,68,0.1);
+  box-shadow: none;
+  transform: rotate(20deg) scale(1.1);
+}
+
+/* =============================================
+   TEMA CLARO — overrides puntuales
+   ============================================= */
+body.tema-claro .header {
+  background: rgba(241,245,249,0.75);
+  backdrop-filter: blur(8px);
+}
+
+body.tema-claro .topbar {
+  background: rgba(241,245,249,0.8);
+  border-color: rgba(15,23,42,0.1);
+}
+
+body.tema-claro .card {
+  box-shadow: 0 2px 12px rgba(15,23,42,0.08);
+}
+
+body.tema-claro .fila {
+  background: rgba(15,23,42,0.04);
+}
+body.tema-claro .fila:hover {
+  background: rgba(15,23,42,0.08);
+}
+
+body.tema-claro .jugador-card {
+  background: linear-gradient(145deg, #ffffff, #f1f5f9);
+  border-color: rgba(15,23,42,0.08);
+}
+body.tema-claro .jugador-card:hover {
+  box-shadow: 0 10px 30px rgba(239,68,68,0.15);
+}
+body.tema-claro .jugador-card.capitan {
+  background: linear-gradient(145deg, #fff7ed, #fef3c7);
+}
+
+body.tema-claro input[type="text"],
+body.tema-claro input[type="password"],
+body.tema-claro input[type="number"] {
+  background: rgba(15,23,42,0.05);
+  border-color: rgba(15,23,42,0.15);
+  color: var(--text-light);
+}
+
+body.tema-claro .modal-content {
+  background: linear-gradient(145deg, #ffffff, #f1f5f9);
+}
+
+body.tema-claro .equipo-titulo-a {
+  background: linear-gradient(90deg, #374151, #1f2937);
+  color: #f1f5f9;
+}
+
+body.tema-claro .equipo-titulo-b {
+  background: linear-gradient(90deg, #94a3b8, #64748b);
+  color: #0f172a;
+}
+
+body.tema-claro .cumple-dia {
+  background: rgba(15,23,42,0.04);
+  color: var(--text-light);
+}
+body.tema-claro .cumple-dia.vacio {
+  background: transparent;
+}
+body.tema-claro .cumple-item {
+  background: rgba(15,23,42,0.04);
+}
+body.tema-claro .cumple-item:hover {
+  background: rgba(15,23,42,0.08);
+}
+body.tema-claro .cumple-tooltip {
+  background: #ffffff;
+  color: var(--text-light);
+}
+
+body.tema-claro .trofeo-card {
+  background: linear-gradient(145deg, #ffffff, #f1f5f9);
+  box-shadow: 0 4px 16px rgba(15,23,42,0.1);
+}
+body.tema-claro .trofeo-card.supercopa {
+  background: linear-gradient(145deg, #fffbeb, #fef9c3);
+}
+
+body.tema-claro .video-banner video {
+  filter: brightness(0.55) contrast(1.05);
+}
+
+body.tema-claro .logo-principal {
+  filter: drop-shadow(0 0 16px rgba(239,68,68,0.35));
+}
+
 /* =============================================
    RESPONSIVE
    ============================================= */
@@ -347,4 +479,3 @@ main { position: relative; padding-top: 10px; }
 @media (max-width: 480px) {
   .fifa-card-wrap { max-height: 90vh; overflow-y: auto; border-radius: 20px; }
 }
-

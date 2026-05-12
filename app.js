@@ -136,17 +136,36 @@ function buscarJugadorPorNombre(texto) {
   return null;
 }
 
+/* ── TEMA CLARO / OSCURO ──────────────────────────── */
+(function initTema() {
+  if (localStorage.getItem("tema") === "claro") {
+    document.body.classList.add("tema-claro");
+    const btn = document.getElementById("btnTema");
+    if (btn) btn.textContent = "🌙";
+  }
+})();
+
+window.toggleTema = () => {
+  const esClaro = document.body.classList.toggle("tema-claro");
+  localStorage.setItem("tema", esClaro ? "claro" : "oscuro");
+  const btn = document.getElementById("btnTema");
+  if (btn) btn.textContent = esClaro ? "🌙" : "☀️";
+};
+
 /* ── CLICK EN LOGO FV → INICIO ────────────────────── */
 document.querySelector(".logo-principal")?.addEventListener("click", () => {
   mostrarSeccion("inicio");
 });
 
-/* ── LOGO CONMEBOL: activar hover después de la animación de entrada ── */
+/* ── LOGO CONMEBOL: entrada y hover manejados por JS ── */
 const logoConmebol = document.querySelector(".logo-secundario");
 if (logoConmebol) {
-  logoConmebol.addEventListener("animationend", () => {
-    logoConmebol.classList.add("listo");
-  }, { once: true });
+  // Entrada: desliza desde la derecha con fade, sin CSS animation
+  logoConmebol.style.transform = "translateX(20px)";
+  setTimeout(() => {
+    logoConmebol.style.opacity  = "1";
+    logoConmebol.style.transform = "translateX(0)";
+  }, 300);
 }
 
 /* ── SVG TROFEOS ──────────────────────────────────── */
