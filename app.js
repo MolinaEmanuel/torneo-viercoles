@@ -140,31 +140,28 @@ function buscarJugadorPorNombre(texto) {
 (function initTema() {
   if (localStorage.getItem("tema") === "claro") {
     document.body.classList.add("tema-claro");
-    const btn = document.getElementById("btnTema");
-    if (btn) btn.textContent = "🌙";
   }
 })();
 
 window.toggleTema = () => {
   const esClaro = document.body.classList.toggle("tema-claro");
   localStorage.setItem("tema", esClaro ? "claro" : "oscuro");
-  const btn = document.getElementById("btnTema");
+  const btn = $("btnTema");
   if (btn) btn.textContent = esClaro ? "🌙" : "☀️";
 };
 
-/* ── CLICK EN LOGO FV → INICIO ────────────────────── */
+/* ── LOGO FV → INICIO ─────────────────────────────── */
 document.querySelector(".logo-principal")?.addEventListener("click", () => {
   mostrarSeccion("inicio");
 });
 
-/* ── LOGO CONMEBOL: entrada y hover manejados por JS ── */
+/* ── LOGO CONMEBOL: entrada via JS, hover libre ───── */
 const logoConmebol = document.querySelector(".logo-secundario");
 if (logoConmebol) {
-  logoConmebol.style.transform = "translateX(20px)";
   setTimeout(() => {
     logoConmebol.style.opacity   = "1";
     logoConmebol.style.transform = "translateX(0)";
-  }, 300);
+  }, 400);
 }
 
 /* ── SVG TROFEOS ──────────────────────────────────── */
@@ -338,7 +335,6 @@ function svgSupercopa() {
     .fcard-nombre-box { text-align:center; padding-bottom:12px; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.06); }
     .fcard-apodo { font-size:20px; font-weight:900; color:#f1f5f9; text-transform:uppercase; letter-spacing:0.5px; line-height:1.15; font-family:'Segoe UI',Arial,sans-serif; }
     .fcard-nombre-completo { font-size:11px; color:rgba(241,245,249,0.55); font-weight:500; margin-top:4px; letter-spacing:0.3px; }
-    .fcard-capitan-label { font-size:9px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:#f59e0b; margin-top:5px; }
     .fcard-sub { font-size:10px; color:rgba(239,68,68,0.7); font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-top:3px; }
     .fcard-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
     .fcard-stat { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:8px 10px; text-align:center; }
@@ -416,7 +412,6 @@ window.abrirJugador = (j, index, equipo, esCapitan = false) => {
             <div class="fcard-nombre-box">
               <div class="fcard-apodo">${apodoMostrar}</div>
               <div class="fcard-nombre-completo">${j.nombre}</div>
-              ${esCapitan ? `<div class="fcard-capitan-label">Capitán</div>` : ""}
               <div class="fcard-sub">${j.escudo || "Fútbol Viércoles"}</div>
             </div>
             <div class="fcard-stats">
@@ -767,13 +762,11 @@ function renderCumples() {
     const p=parsearNacimiento(j.nacimiento);
     if(p&&p.mes===mes){if(!cumplesMes[p.dia])cumplesMes[p.dia]=[];cumplesMes[p.dia].push(j);}
   });
-
   const navHTML=`<div class="cumple-nav">
     <button onclick="cambiarMesCumple(-1)">◀</button>
     <span class="cumple-mes-label">${MESES[mes]} ${anio}</span>
     <button onclick="cambiarMesCumple(1)">▶</button>
   </div>`;
-
   const primerDia=new Date(anio,mes,1).getDay(), diasEnMes=new Date(anio,mes+1,0).getDate();
   let gridHTML=DIAS_SEMANA.map(d=>`<div class="cumple-dia-header">${d}</div>`).join("");
   for(let v=0;v<primerDia;v++) gridHTML+=`<div class="cumple-dia vacio"></div>`;
@@ -786,70 +779,56 @@ function renderCumples() {
       ${tieneCumple?`<span class="cumple-tooltip">🎂 ${nombres}</span>`:""}
     </div>`;
   }
-
   const sortedDias=Object.keys(cumplesMes).map(Number).sort((a,b)=>a-b);
   const listaHTML=sortedDias.length
     ?sortedDias.map(d=>cumplesMes[d].map(j=>{
-        const enc = buscarJugadorPorNombre(j.apodo || j.nombre);
-        const clickAttr = enc ? `onclick="abrirJugadorIndex('${enc.equipo}',${enc.index})"` : "";
-        return `
-          <div class="cumple-item" ${clickAttr}>
-            <div class="cumple-item-dia">${d}</div>
-            <div class="cumple-item-nombre">
-              <strong>${j.apodo||j.nombre}</strong>
-              <span>${j.nombre}</span>
-            </div>
-          </div>`;
+        const enc=buscarJugadorPorNombre(j.apodo||j.nombre);
+        const clickAttr=enc?`onclick="abrirJugadorIndex('${enc.equipo}',${enc.index})"`:"";
+        return `<div class="cumple-item" ${clickAttr}>
+          <div class="cumple-item-dia">${d}</div>
+          <div class="cumple-item-nombre">
+            <strong>${j.apodo||j.nombre}</strong>
+            <span>${j.nombre}</span>
+          </div>
+        </div>`;
       }).join("")).join("")
     :`<div class="cumple-empty">No hay cumpleaños en ${MESES[mes]}.</div>`;
-
   cumpleEl.innerHTML=`${navHTML}<div class="cumple-grid">${gridHTML}</div><div class="cumple-lista">${listaHTML}</div>`;
 }
 window.cambiarMesCumple=(dir)=>{cumpleMesActual=(cumpleMesActual+dir+12)%12;renderCumples();};
 
 /* ── PALMARÉS ─────────────────────────────────────── */
 function renderPalmares() {
-  const isAdmin = window.admin === true;
-  const anios   = Object.keys(palmares).sort((a,b) => b - a);
-
-  const trofeoHTML = (anio, tipo, svgFn, clase, label) => {
-    const ganador = palmares[anio]?.[tipo] || "";
-    const selectHTML = isAdmin ? `
+  const isAdmin=window.admin===true;
+  const anios=Object.keys(palmares).sort((a,b)=>b-a);
+  const trofeoHTML=(anio,tipo,svgFn,clase,label)=>{
+    const ganador=palmares[anio]?.[tipo]||"";
+    const selectHTML=isAdmin?`
       <div class="trofeo-admin visible">
         <select id="sel-${anio}-${tipo}" onchange="guardarTrofeo('${anio}','${tipo}')">
           ${EQUIPOS_OPCIONES.map(e=>`<option value="${e}" ${e===ganador?"selected":""}>${e||"— Sin asignar —"}</option>`).join("")}
         </select>
-      </div>` : "";
-    return `
-      <div class="trofeo-card ${clase}">
-        <div class="trofeo-svg-wrap">${svgFn()}</div>
-        <div class="trofeo-tipo">${label}</div>
-        <div class="trofeo-ganador">${ganador || '<span class="trofeo-vacio">Sin asignar</span>'}</div>
-        ${selectHTML}
-      </div>`;
+      </div>`:"";
+    return `<div class="trofeo-card ${clase}">
+      <div class="trofeo-svg-wrap">${svgFn()}</div>
+      <div class="trofeo-tipo">${label}</div>
+      <div class="trofeo-ganador">${ganador||'<span class="trofeo-vacio">Sin asignar</span>'}</div>
+      ${selectHTML}
+    </div>`;
   };
-
-  const cuerpo = anios.map(anio => `
+  const cuerpo=anios.map(anio=>`
     <div class="palmares-anio">
       <div class="palmares-anio-titulo">${anio}</div>
       <div class="palmares-trofeos">
-        ${trofeoHTML(anio,"apertura", svgCopaApertura, "apertura", "Apertura "+anio)}
-        ${trofeoHTML(anio,"supercopa",svgSupercopa,    "supercopa","Supercopa "+anio)}
-        ${trofeoHTML(anio,"clausura", svgCopaClausura, "clausura", "Clausura "+anio)}
+        ${trofeoHTML(anio,"apertura", svgCopaApertura,"apertura","Apertura "+anio)}
+        ${trofeoHTML(anio,"supercopa",svgSupercopa,   "supercopa","Supercopa "+anio)}
+        ${trofeoHTML(anio,"clausura", svgCopaClausura,"clausura","Clausura "+anio)}
       </div>
     </div>`).join("");
-
-  const btnNuevoAnio = isAdmin
-    ? `<div class="palmares-nuevo-anio visible"><button onclick="agregarAnio()">+ Agregar año</button></div>`
-    : "";
-
-  palmaresEl.innerHTML = `
-    <div class="card">
-      <h2>Palmarés</h2>
-      ${btnNuevoAnio}
-      ${cuerpo || '<p style="text-align:center;color:var(--text-muted)">No hay registros aún.</p>'}
-    </div>`;
+  const btnNuevoAnio=isAdmin?`<div class="palmares-nuevo-anio visible"><button onclick="agregarAnio()">+ Agregar año</button></div>`:"";
+  palmaresEl.innerHTML=`<div class="card"><h2>Palmarés</h2>${btnNuevoAnio}${cuerpo||'<p style="text-align:center;color:var(--text-muted)">No hay registros aún.</p>'}</div>`;
 }
 
 /* ── INIT ─────────────────────────────────────────── */
 cargarDatos();
+

@@ -107,10 +107,14 @@ main, .topbar, .header {
   height: 60px;
   opacity: 0;
   transform: translateX(20px);
-  animation: slideInRight 0.6s ease forwards;
-  transition: transform var(--transition);
+  /* Sin CSS animation — la entrada la hace JS para no bloquear el hover */
+  transition: opacity 0.5s ease, transform 0.3s ease, filter 0.3s ease;
+  cursor: pointer;
 }
-.logo-secundario:hover { transform: scale(1.08) rotate(2deg); }
+.logo-secundario:hover {
+  transform: scale(1.15) rotate(2deg) !important;
+  filter: drop-shadow(0 0 14px rgba(239,68,68,0.4));
+}
 
 /* =============================================
    TYPOGRAPHY
