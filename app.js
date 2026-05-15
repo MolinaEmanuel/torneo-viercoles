@@ -137,17 +137,30 @@ function buscarJugadorPorNombre(texto) {
 }
 
 /* ── TEMA CLARO / OSCURO ──────────────────────────── */
-(function initTema() {
-  if (localStorage.getItem("tema") === "claro") {
-    document.body.classList.add("tema-claro");
+function actualizarIconoTema(esClaro) {
+  const icono = document.getElementById("iconTema");
+  if (!icono) return;
+  if (esClaro) {
+    // Luna SVG
+    icono.setAttribute("viewBox", "0 0 24 24");
+    icono.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
+  } else {
+    // Sol SVG
+    icono.setAttribute("viewBox", "0 0 24 24");
+    icono.innerHTML = `<circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2" fill="none"/><line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`;
   }
+}
+
+(function initTema() {
+  const esClaro = localStorage.getItem("tema") === "claro";
+  if (esClaro) document.body.classList.add("tema-claro");
+  actualizarIconoTema(esClaro);
 })();
 
 window.toggleTema = () => {
   const esClaro = document.body.classList.toggle("tema-claro");
   localStorage.setItem("tema", esClaro ? "claro" : "oscuro");
-  const btn = $("btnTema");
-  if (btn) btn.textContent = esClaro ? "🌙" : "☀️";
+  actualizarIconoTema(esClaro);
 };
 
 /* ── LOGO FV → INICIO ─────────────────────────────── */
@@ -477,7 +490,10 @@ function cargarDatos() {
       jugadores = data.jugadores || new Array(datos.length).fill("");
       videos    = data.videos    || {};
       planteles = data.planteles || { A: [], B: [] };
-      palmares  = data.palmares  || { "2025": { apertura: "Equipo SEBA", clausura: "Equipo HEBER", supercopa: "Equipo HEBER" } };
+      // Fallback de palmarés también cuando llega vacío desde Firestore
+      palmares  = (data.palmares && Object.keys(data.palmares).length > 0)
+        ? data.palmares
+        : { "2025": { apertura: "Equipo SEBA", clausura: "Equipo HEBER", supercopa: "Equipo HEBER" } };
       ["A","B"].forEach(eq => { planteles[eq] = (planteles[eq] || []).map(normalizarJugador); });
     } else {
       datos     = generarFechas();
